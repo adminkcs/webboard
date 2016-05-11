@@ -55,8 +55,6 @@ public class FrontController extends HttpServlet {
 			} catch( NumberFormatException e) {
 				
 			}
-			
-			// "/read" ? pnum=1005
 			request.setAttribute("p", post);
 			request.getRequestDispatcher("WEB-INF/read.jsp").forward(request, response);
 		} else if ( uri.equals("/edit")) {
