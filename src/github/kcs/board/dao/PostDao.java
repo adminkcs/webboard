@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import github.kcs.board.vo.PostVO;
+import github.kcs.board.vo.UserVO;
 
 /**
  * posts 테이블에서 게시판 글을 조회하거나, 읽거나, 편집 및 삭제를 담당합니다.
@@ -27,11 +28,12 @@ public class PostDao {
 	}
 
 	private List<PostVO> samples = new ArrayList<>();
+	private UserVO demoUser = new UserVO(1000, "dkdkdk", "111", "2016-02-22 12:22:12");
 	{
-		samples.add(new PostVO(1005, "가나다","본문", 3323, "2016-04-22", "James"));
-		samples.add(new PostVO(1002, "가나다","본문", 3323, "2016-04-22", "James"));
-		samples.add(new PostVO(1001, "가나다22","본문", 3323, "2016-04-22", "James"));
-		samples.add(new PostVO(1000, "가나다323","본문", 3323, "2016-04-22", "James"));
+//		samples.add(new PostVO(1005, "가나다","본문", 3323, "2016-04-22", "James"));
+//		samples.add(new PostVO(1002, "가나다","본문", 3323, "2016-04-22", "James"));
+//		samples.add(new PostVO(1001, "가나다22","본문", 3323, "2016-04-22", "James"));
+//		samples.add(new PostVO(1000, "가나다323","본문", 3323, "2016-04-22", "James"));
 	}
 	
 	/*
@@ -57,7 +59,7 @@ public class PostDao {
 	 */
 	public List<PostVO> findAll() {
 		// FIXME 가짜로 넣어두고 시작합니다.
-		String query = "select seq, title, content, viewcount, creationtime from posts order by creationtime desc";
+		String query = "select seq, title, content, viewcount, creationtime, writer from posts order by creationtime desc";
 		
 		Connection con = getConnection();
 		PreparedStatement stmt = null;
@@ -73,7 +75,8 @@ public class PostDao {
 				Integer viewcount = rs.getInt("viewcount");
 				String creationtime = rs.getString("creationtime");
 				
-				PostVO p = new PostVO(seq, title, content, viewcount, creationtime, "James");
+				UserVO writer = new UserDao().findBySeq(rs.getInt("writer"));
+				PostVO p = new PostVO(seq, title, content, viewcount, creationtime, writer);
 				posts.add(p);
 			}
 			
@@ -93,7 +96,7 @@ public class PostDao {
 	 */
 	public PostVO findBySeq ( Integer seq) {
 		// select * from posts where seq = 1005
-		String query = "select seq, title, content, viewcount, creationtime from posts where seq = ?";
+		String query = "select seq, title, content, viewcount, creationtime, writer from posts where seq = ?";
 		
 		Connection con = getConnection();
 		PreparedStatement stmt = null;
@@ -110,7 +113,8 @@ public class PostDao {
 				Integer viewcount = rs.getInt("viewcount");
 				String creationtime = rs.getString("creationtime");
 				
-				p = new PostVO(seq, title, content, viewcount, creationtime, "James");
+				UserVO writer = new UserDao().findBySeq(rs.getInt("writer"));
+				p = new PostVO(seq, title, content, viewcount, creationtime, writer);
 				
 			}
 			

@@ -38,7 +38,7 @@ function go ( pnum ) {
 		<td><a href="#" onclick="go(${k.seq}); return false;">${k.title }</a></td>
 		<td>${k.viewCount }</td>
 		<td>${k.time }</td> <!-- k.getCreationTime() -->
-		<td>${k.writer }</td>
+		<td>${k.writer.id }</td> <!-- k.getWriter().getId() -->
 	</tr>	
 </c:forEach>
 </table>
