@@ -8,6 +8,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import github.kcs.board.vo.PostVO;
 import github.kcs.board.vo.UserVO;
 
@@ -18,17 +20,21 @@ import github.kcs.board.vo.UserVO;
  */
 public class PostDao {
 	
-	static {
+/*	static {
 		try {
 //			Class.forName("org.mariadb.jdbc.Driver");
 			DriverManager.registerDriver(new org.mariadb.jdbc.Driver());
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-	}
+	}*/
 
-	private List<PostVO> samples = new ArrayList<>();
+	
+	private UserDao userDao; // = new UserDao();
+	
 	private UserVO demoUser = new UserVO(1000, "dkdkdk", "111", "2016-02-22 12:22:12");
+	
+	private List<PostVO> samples = new ArrayList<>();
 	{
 //		samples.add(new PostVO(1005, "가나다","본문", 3323, "2016-04-22", "James"));
 //		samples.add(new PostVO(1002, "가나다","본문", 3323, "2016-04-22", "James"));
@@ -36,10 +42,20 @@ public class PostDao {
 //		samples.add(new PostVO(1000, "가나다323","본문", 3323, "2016-04-22", "James"));
 	}
 	
+	private DataSource ds;
+	public PostDao ( UserDao userDao ) {
+		this.userDao = userDao;
+	}
+	
+	public PostDao (DataSource ds, UserDao userDao ) {
+		this.userDao = userDao;
+		this.ds = ds;
+	}	
 	/*
 	 *  이렇게 커넥션을 얻어오는 코드를 Dao 안에 두지 않습니다.
 	 *  보통은 외부에서 커넥션을 얻어오는 구현체를 삽입해줍니다.
 	 */
+	/*
 	private Connection getConnection () {
 		String url = "jdbc:mysql://localhost:3306/boarddb";
 		String user = "root";
@@ -53,18 +69,19 @@ public class PostDao {
 		}
 		
 	}
+	*/
 	/**
 	 * 
 	 * @return
 	 */
 	public List<PostVO> findAll() {
-		// FIXME 가짜로 넣어두고 시작합니다.
 		String query = "select seq, title, content, viewcount, creationtime, writer from posts order by creationtime desc";
 		
-		Connection con = getConnection();
+		Connection con =  null; //getConnection();
 		PreparedStatement stmt = null;
 		ResultSet rs  = null;
 		try {
+			con = ds.getConnection();
 			stmt = con.prepareStatement(query);
 			rs = stmt.executeQuery();
 			List<PostVO> posts = new ArrayList<>();
@@ -75,7 +92,7 @@ public class PostDao {
 				Integer viewcount = rs.getInt("viewcount");
 				String creationtime = rs.getString("creationtime");
 				
-				UserVO writer = new UserDao().findBySeq(rs.getInt("writer"));
+				UserVO writer = userDao.findBySeq(rs.getInt("writer"));
 				PostVO p = new PostVO(seq, title, content, viewcount, creationtime, writer);
 				posts.add(p);
 			}
@@ -98,11 +115,12 @@ public class PostDao {
 		// select * from posts where seq = 1005
 		String query = "select seq, title, content, viewcount, creationtime, writer from posts where seq = ?";
 		
-		Connection con = getConnection();
+		Connection con = null;   //getConnection();
 		PreparedStatement stmt = null;
 		ResultSet rs  = null;
 		PostVO p = null;
 		try {
+			con = ds.getConnection();
 			stmt = con.prepareStatement(query);
 			stmt.setInt(1, seq);
 			rs = stmt.executeQuery();
@@ -113,16 +131,38 @@ public class PostDao {
 				Integer viewcount = rs.getInt("viewcount");
 				String creationtime = rs.getString("creationtime");
 				
-				UserVO writer = new UserDao().findBySeq(rs.getInt("writer"));
+				UserVO writer = this.userDao.findBySeq(rs.getInt("writer"));
 				p = new PostVO(seq, title, content, viewcount, creationtime, writer);
-				
 			}
-			
 			return p;
 		} catch (SQLException e) {
 			throw new RuntimeException("fail to load", e);
 		} finally {
 			DBUtil.release(con, stmt, rs);
+		}
+	}
+	
+	public void insertPost ( String title, String content, UserVO writer) {
+		String query = "insert into posts ( title, content,writer) values (?,?,?);"; // inser, update, delete
+		
+		Connection con = null;   //getConnection();
+		PreparedStatement stmt = null;
+		PostVO p = null;
+		try {
+			con = ds.getConnection();
+			stmt = con.prepareStatement(query);
+			stmt.setString(1, title);
+			stmt.setString(2, content);
+			stmt.setInt(3, writer.getSeq());
+			int nInserted = stmt.executeUpdate();
+//			if ( nInserted < 1) {
+//				throw new SQLException("쓰기 실패. 글 안들어갔습니다.");
+//			}
+			
+		} catch (SQLException e) {
+			throw new RuntimeException("fail to load", e);
+		} finally {
+			DBUtil.release(con, stmt, null);
 		}
 	}
 	

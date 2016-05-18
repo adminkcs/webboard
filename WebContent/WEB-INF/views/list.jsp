@@ -8,6 +8,13 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>게시판 - ${category }</title>
+
+<style type="text/css">
+.menu {
+	background-color: #ff0;
+}
+</style>
+
 <script type="text/javascript">
 function go ( pnum ) {
 	var input = document.getElementById('pnum') ;
@@ -18,15 +25,18 @@ function go ( pnum ) {
 </script>
 </head>
 <body>
+<!-- 상단 메뉴 시작  -->
+<jsp:include page="/WEB-INF/header.jsp"></jsp:include>
+<!-- 상단 메뉴 끝 -->
 <form action="<%=request.getContextPath() %>/read" method="post" id="frm">
 <input type="hidden" name="pnum" id="pnum" value="1005">
 </form>
 <h3>${category }게시판 리스트 출력[2]</h3>
-	${allPosts }
 <table border="1">
 	<tr>
 		<td>글번호</td>
 		<td>제목</td>
+		<td>조회수</td>
 		<td>작성일</td>
 		<td>작성자</td>
 	</tr>
@@ -49,5 +59,6 @@ function go ( pnum ) {
 		out.println("<li>" +  p.toString() ) ;
 	}
 %> --%>
+<button><a href="write">글쓰기</a></button>
 </body>
 </html>
