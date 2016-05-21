@@ -35,7 +35,13 @@ public class UserDao {
 	 */
 	public UserVO login ( String id, String password) {
 		
-		String query = "select seq, id, password, joindate from users where id = ? and password = ?";
+		String query = "SELECT SEQ           "
+				     + "     , ID            "
+				     + "     , PASSWORD      "
+				     + "     , JOINDATE      "
+				     + "  FROM USERS         "
+				     + " WHERE ID = ?        "
+				     + "   AND PASSWORD = ?  ";
 		
 		Connection con = null ; 
 		PreparedStatement stmt = null;
@@ -67,7 +73,12 @@ public class UserDao {
 	 * @return
 	 */
 	public UserVO findBySeq ( Integer userSeq) {
-		String query = "select seq, id, password, joindate from users where seq = ?";
+		String query = "SELECT SEQ         "
+				     + "     , ID          "
+				     + "     , PASSWORD    "
+				     + "     , JOINDATE    "
+				     + "  FROM USERS       "
+				     + " WHERE SEQ = ?     ";
 		
 		Connection con = null ; 
 		PreparedStatement stmt = null;

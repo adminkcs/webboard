@@ -11,9 +11,10 @@
 <jsp:include page="/WEB-INF/header.jsp"></jsp:include>
 <!-- 상단 메뉴 끝 -->
 <form action="doWrite" method="post">
+<input type="hidden" name="seq" value=${loginUser.seq }>
 <table>
 	<tr>
-		<td><input type="text" name = "title" value="제목"></td>
+		<td><input type="text" name = "title"></td>
 	</tr>
 	
 	<tr>

@@ -75,7 +75,14 @@ public class PostDao {
 	 * @return
 	 */
 	public List<PostVO> findAll() {
-		String query = "select seq, title, content, viewcount, creationtime, writer from posts order by creationtime desc";
+		String query = "SELECT SEQ"
+				          + ", TITLE"
+				          + ", CONTENT"
+				          + ", VIEWCOUNT"
+				          + ", CREATIONTIME"
+				          + ", WRITER "
+				       + "FROM POSTS "
+				       + "ORDER BY CREATIONTIME DESC";
 		
 		Connection con =  null; //getConnection();
 		PreparedStatement stmt = null;
@@ -113,7 +120,14 @@ public class PostDao {
 	 */
 	public PostVO findBySeq ( Integer seq) {
 		// select * from posts where seq = 1005
-		String query = "select seq, title, content, viewcount, creationtime, writer from posts where seq = ?";
+		String query = "SELECT SEQ               "
+				     + "     , TITLE             "
+				     + "     , CONTENT           "
+				     + "     , VIEWCOUNT         "
+				     + "     , CREATIONTIME      "
+				     + "     , WRITER            "
+				     + "  FROM POSTS             "
+				     + "  WHERE SEQ = ?          ";
 		
 		Connection con = null;   //getConnection();
 		PreparedStatement stmt = null;
@@ -142,8 +156,9 @@ public class PostDao {
 		}
 	}
 	
-	public void insertPost ( String title, String content, UserVO writer) {
-		String query = "insert into posts ( title, content,writer) values (?,?,?);"; // inser, update, delete
+	public void insertPost ( String title, String content, int seq) {
+		String query = "INSERT INTO POSTS (TITLE, CONTENT, WRITER) "
+				     + "VALUES (?,?,?)                             "; // inser, update, delete
 		
 		Connection con = null;   //getConnection();
 		PreparedStatement stmt = null;
@@ -153,7 +168,7 @@ public class PostDao {
 			stmt = con.prepareStatement(query);
 			stmt.setString(1, title);
 			stmt.setString(2, content);
-			stmt.setInt(3, writer.getSeq());
+			stmt.setInt(3, seq);
 			int nInserted = stmt.executeUpdate();
 //			if ( nInserted < 1) {
 //				throw new SQLException("쓰기 실패. 글 안들어갔습니다.");
@@ -165,8 +180,59 @@ public class PostDao {
 			DBUtil.release(con, stmt, null);
 		}
 	}
-	
+	public void updatePost(String title, String content, int seq) {
+		String query = "UPDATE POSTS         "
+				     + "SET TITLE = ?        "
+				     + "  , CONTENT = ?      "
+				     + "WHERE SEQ = ?        "; // inser, update, delete
+		
+		Connection con = null;   //getConnection();
+		PreparedStatement stmt = null;
+		PostVO p = null;
+		try {
+			con = ds.getConnection();
+			stmt = con.prepareStatement(query);
+			stmt.setString(1, title);
+			stmt.setString(2, content);
+			stmt.setInt(3, seq);
+			int nInserted = stmt.executeUpdate();
+//			if ( nInserted < 1) {
+//				throw new SQLException("쓰기 실패. 글 안들어갔습니다.");
+//			}
+			
+		} catch (SQLException e) {
+			throw new RuntimeException("fail to load", e);
+		} finally {
+			DBUtil.release(con, stmt, null);
+		}		
+	}
+	public void deletePost(int seq) {
+		String query = "DELETE FROM POSTS "
+				     + "WHERE SEQ = ?     "; // inser, update, delete
+		
+		Connection con = null;   //getConnection();
+		PreparedStatement stmt = null;
+		PostVO p = null;
+		try {
+			con = ds.getConnection();
+			stmt = con.prepareStatement(query);
+			stmt.setInt(1, seq);
+			stmt.executeUpdate();
+//			int nInserted = stmt.executeUpdate();
+//			if ( nInserted < 1) {
+//				throw new SQLException("쓰기 실패. 글 안들어갔습니다.");
+//			}
+			
+		} catch (SQLException e) {
+			throw new RuntimeException("fail to load", e);
+		} finally {
+			DBUtil.release(con, stmt, null);
+		}		
+	}
+
 	public List<PostVO> findByCategory ( String category, int offset, int lenth ) {
 		return null;
 	}
+
+
 }

@@ -4,6 +4,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="ctxpath" value="${pageContext.request.contextPath}"></c:set>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -20,18 +21,27 @@
 	out.print("<p>" + "아직 본문 내용이 없다" + "</p>");
 %>
  --%>
- <c:if test="${ not empty p }">
- <h3>${p.title}</h3> 
- <h3>${p.content}</h3> 
- <p>아직 본문 없음</p>
- </c:if>
- <c:if test="${ empty p }">
- <h3>글 없음</h3>
- </c:if>
- <p>글쓴사람의 ID : ${p.getWriter().getId() }</p>
- <p>지금 로그인한 사람의 ID : ${loginUser.getId() }</p>
-<c:if test="${ p.writer.id eq loginUser.id  }"><li><a href="edit">편집하기</a></c:if><!-- 지금 보고 있는 글을 쓴 사람과 로그인한 사람이 같을때에만 -->
-<c:if test="${ p.writer eq loginUser  }"><li><a href="delete">삭제하기</a></c:if><!-- 지금 보고 있는 글을 쓴 사람과 로그인한 사람이 같을때에만 -->
-<li><a href="${ctxpath}/list">목록으로</a>
+<%-- 		 <p>글쓴사람의 ID : ${p.getWriter().getId() }</p>
+		 <p>지금 로그인한 사람의 ID : ${loginUser.getId() }</p> --%>
+ <form>
+ 	<table border=1>
+		 <c:if test="${ not empty p }">
+			 <tr>
+	 			<td>제목</td>
+	 			<td>${p.title}</td>
+	 		 </tr>
+			 <tr>
+	 			<td>내용</td>
+	 			<td><textarea rows="20" cols="40" disabled="disabled">${p.content}</textarea></td>
+	 		 </tr>
+		 </c:if>
+		 <c:if test="${ empty p }">
+		 <h3>글 없음</h3>
+		 </c:if>
+ 	</table>
+		<c:if test="${ p.writer.id eq loginUser.id  }"><li><a href="edit?pnum=${p.seq}">편집하기</a></c:if><!-- 지금 보고 있는 글을 쓴 사람과 로그인한 사람이 같을때에만 -->
+		<c:if test="${ p.writer eq loginUser  }"><li><a href="delete?pnum=${p.seq }">삭제하기</a></c:if><!-- 지금 보고 있는 글을 쓴 사람과 로그인한 사람이 같을때에만 -->
+		<li><a href="${ctxpath}/list">목록으로</a>
+</form>
 </body>
 </html>
