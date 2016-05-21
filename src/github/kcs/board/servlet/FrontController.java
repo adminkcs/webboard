@@ -19,7 +19,17 @@ import github.kcs.board.vo.UserVO;
 /**
  * Servlet implementation class FrontController
  */
-@WebServlet( urlPatterns = {"/login", "/list", "/read","/write" ,"/doWrite","/edit", "/delete","/doLogin","/logout"} )
+@WebServlet( urlPatterns = {    "/login"	//로그인   (로그인화면으로 이동)
+							  , "/doLogin"	//로그인   (로그인 기능 /로그인 후 리스트로 이동)
+							  , "/logout"	//로그아웃 (로그아웃 기능 /로그아웃 후 리스트로 이동)
+							  , "/list"		//리스트   (리스트 화면으로 이동)
+							  , "/read"		//상세보기 (게시글 상세화면으로 이동) 
+							  , "/write" 	//글쓰기   (게시글 글쓰기 화면으로 이동)
+							  , "/doWrite"	//글쓰기	 (게시글 저장/저장후 리스트로 이동)	
+							  , "/edit"		//글수정   (게시글 글수정 화면으로 이동)
+							  , "/delete"	//글삭제   (게시글 글삭제 /삭제 후 리스트로 이동)   
+							  , "/doEdit"	//글수정	 (게시글 수정기능 / 수정 후 상세보기 화면으로 이동) 저장 후 상세 화면으로 이동하지 않음
+						  } )
 public class FrontController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -27,8 +37,7 @@ public class FrontController extends HttpServlet {
      * @see HttpServlet#HttpServlet()
      */
     public FrontController() {
-        super();
-        // TODO Auto-generated constructor stub
+        super();       
     }
 
 	/**
@@ -51,20 +60,42 @@ public class FrontController extends HttpServlet {
 			PageListAction listAction = new PageListAction();
 			listAction.process(request, response);
 		} else if ( uri.equals("/write")) {
+			/*
+			 * 글쓰기 화면으로 이동
+			 */
 			UserVO fakeUser = new UserVO("fake", "1111");
 			request.getRequestDispatcher("WEB-INF/write.jsp").forward(request, response);
-		} else if ( uri.equals("/delete")) {
-			;
-		}else if(uri.equals("/login")){
+		} else if(uri.equals("/login")){
 			/*
 			 * FIXME 만일 현재 사용자가 이미 로그인을 했다면 아래와 같이 로그인 페이지로 포워등을 하면 안됩니다. 
 			 */
 			
 			request.getRequestDispatcher("WEB-INF/login.jsp").forward(request, response);
-		}else if(uri.equals("/logout")){
+		} else if(uri.equals("/logout")){
 			HttpSession session = request.getSession();
 			session.invalidate(); // 세션을 날려버립니다. 세션은 진짜 필요한 정보만 담아야 합니다.
 //			request.getRequestDispatcher("WEB-INF/views/list.jsp").forward(request, response);
+			response.sendRedirect("list");
+		} else if ( uri.equals("/edit")) {
+			/*
+			 * 게시판 수정 화면으로 이동합니다.
+			 */
+			String pnum = request.getParameter("pnum");
+			System.out.println("edit_pnum: " + pnum);
+			PostVO post = null;
+			try {			
+				post = postDao.findBySeq ( Integer.parseInt(pnum) );
+			} catch( NumberFormatException e) {
+				e.printStackTrace();
+			}
+			request.setAttribute("p", post);
+			request.getRequestDispatcher("WEB-INF/edit.jsp").forward(request, response);
+		} else if ( "/delete".equals(uri) ) {
+			/*
+			 * 게시글 글삭제 
+			 */
+			int seq = Integer.parseInt(request.getParameter("pnum"));  
+			postDao.deletePost ( seq );
 			response.sendRedirect("list");
 		}
 		
@@ -97,21 +128,23 @@ public class FrontController extends HttpServlet {
 		UserDao userDao = (UserDao) context.getAttribute("userDao");
 		//doGet(request, response);
 		if ( "/doWrite".equals(uri) ) {
-			// 실제 글쓴 내용이 옵니다. 
-			// FIXME 가짜 사용자를 넣었습니다.
-			UserVO fakeUser = new UserVO(1, "", "", ""); 
+			/*
+			 * 게시글 글쓰기 저장
+			 */
+			// 실제 글쓴 내용이 옵니다.
 			String title = request.getParameter("title");
 			String content = request.getParameter("content");
-			postDao.insertPost ( title, content, fakeUser );
+			//Q&A 2016.05.19 형변환을 해야 하는 이유를 모르겠습니다.
+			int seq = Integer.parseInt(request.getParameter("seq"));  
+			postDao.insertPost ( title, content, seq );
 			/*
 			 * 2. db로 새글을 입력합니다.
 			 */
-			
 			response.sendRedirect(request.getContextPath() + "/list"); // 클라이언트한테 저 url로 다시 가라고 함.
 		}else if(uri.equals("/doLogin")){
 			/*
+			 * 로그인 화면으로 이동합니다.
 			 * 톰캣을 클러스터링으로 구성할때가 있습니다.
-			 * 
 			 */
 			String id = request.getParameter("id");
 			String password = request.getParameter("password");
@@ -134,19 +167,42 @@ public class FrontController extends HttpServlet {
 			 * 2. 실패했으면 ?
 			 */
 		} else if ( uri.equals("/read")) {
+			/*
+			 * 게시글 상세화면으로 이동합니다.
+			 */
 			String pnum = request.getParameter("pnum");
-			System.out.println("pnum: " + pnum);
+			System.out.println("read_pnum: " + pnum);
 			PostVO post = null;
 			try {
-				int postSeq = 1;
-				postSeq = Integer.parseInt(pnum);				
+//				int postSeq = 1;/
+//				postSeq = Integer.parseInt(pnum);				
 				post = postDao.findBySeq ( Integer.parseInt(pnum) );
 			} catch( NumberFormatException e) {
 				e.printStackTrace();
 			}
 			request.setAttribute("p", post);
 			request.getRequestDispatcher("WEB-INF/read.jsp").forward(request, response);
-		} 
+		} else if ( "/doEdit".equals(uri) ) {
+			/*
+			 * 게시글 글수정 저장
+			 */
+			// 실제 글쓴 내용이 옵니다.
+			String title = request.getParameter("title");
+			String content = request.getParameter("content");
+			int seq = Integer.parseInt(request.getParameter("pnum"));  
+			postDao.updatePost ( title, content, seq );
+			/*
+			 * 2. db로 새글을 입력합니다.
+			 */
+			PostVO post = null;
+			try {
+				post = postDao.findBySeq (seq);
+			} catch( NumberFormatException e) {
+				e.printStackTrace();
+			}
+			request.setAttribute("p", post);
+			request.getRequestDispatcher("WEB-INF/read.jsp").forward(request, response);
+		}
 		
 		else {
 			response.getWriter().append("Unknown URI: ").append(request.getContextPath());
