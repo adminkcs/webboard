@@ -12,6 +12,7 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 import javax.sql.DataSource;
 
+import github.kcs.board.BoardContext;
 import github.kcs.board.dao.PostDao;
 import github.kcs.board.dao.UserDao;
 
@@ -73,14 +74,22 @@ public class BoardInitListener implements ServletContextListener {
 
 	private void initDao(ServletContext sc, DataSource ds) {
 		/* 사용자 dao 호출 */
+		BoardContext btx = new BoardContext();
 		UserDao userDao = new UserDao(ds);
+		btx.setUserDao ( userDao );
+		
 		sc.setAttribute("userDao",  userDao);
 		
 		/* 게시판 dao 호출 */
 		PostDao postDao = new PostDao(ds, userDao);
+		btx.setPostDao( postDao );
+		
 		sc.setAttribute("postDao", postDao);
 		
 //		NoteDao noteDao = new NoteDao ( userDao );
+		
+		sc.setAttribute("BOARD_CTX", btx);
+		
 		System.out.println("DAO 설정 성공");
 	}
 	

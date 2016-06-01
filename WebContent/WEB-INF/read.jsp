@@ -3,8 +3,7 @@
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <c:set var="ctxpath" value="${pageContext.request.contextPath}"></c:set>
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-
+<!DOCTYPE html>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -23,7 +22,16 @@
  --%>
 <%-- 		 <p>글쓴사람의 ID : ${p.getWriter().getId() }</p>
 		 <p>지금 로그인한 사람의 ID : ${loginUser.getId() }</p> --%>
- <form>
+		 
+<script type="text/javascript">
+function doDel(){
+	document.board.method = "POST";
+	document.board.action = "delete";
+	document.board.submit();
+}
+</script>		 
+ <form name="board">
+ 	<input type="hidden" name="pnum" value="${p.seq }">
  	<table border=1>
 		 <c:if test="${ not empty p }">
 			 <tr>
@@ -40,7 +48,9 @@
 		 </c:if>
  	</table>
 		<c:if test="${ p.writer.id eq loginUser.id  }"><li><a href="edit?pnum=${p.seq}">편집하기</a></c:if><!-- 지금 보고 있는 글을 쓴 사람과 로그인한 사람이 같을때에만 -->
-		<c:if test="${ p.writer eq loginUser  }"><li><a href="delete?pnum=${p.seq }">삭제하기</a></c:if><!-- 지금 보고 있는 글을 쓴 사람과 로그인한 사람이 같을때에만 -->
+		<c:if test="${ p.writer eq loginUser  }"><li>
+		<a href="JavaScript:doDel()">삭제하기</a>
+		</c:if><!-- 지금 보고 있는 글을 쓴 사람과 로그인한 사람이 같을때에만 -->
 		<li><a href="${ctxpath}/list">목록으로</a>
 </form>
 </body>

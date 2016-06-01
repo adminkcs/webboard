@@ -234,5 +234,28 @@ public class PostDao {
 		return null;
 	}
 
+	public void updateViewCount(Integer postSeq, int viewCount) {
+		String query = "UPDATE POSTS         "
+			     + "SET VIEWCOUNT = ?        "
+			     + "WHERE SEQ = ?        "; // inser, update, delete
+	
+	Connection con = null;   //getConnection();
+	PreparedStatement stmt = null;
+	PostVO p = null;
+	try {
+		con = ds.getConnection();
+		stmt = con.prepareStatement(query);
+		stmt.setInt(2, postSeq);
+		stmt.setInt(1, viewCount);
+		stmt.executeUpdate();
+		
+	} catch (SQLException e) {
+		throw new RuntimeException("fail to load", e);
+	} finally {
+		DBUtil.release(con, stmt, null);
+	}		
+		
+	}
+
 
 }
