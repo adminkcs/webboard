@@ -12,7 +12,7 @@
 <!-- 상단 메뉴 끝 -->
 <form  action="doLogin" method="post">
 	<table>
-		<tr>
+		<tr> 
 			<td><input type="text" name="id" value="james" placeholder="아이디입력"></td>
 		</tr>
 		<tr>
