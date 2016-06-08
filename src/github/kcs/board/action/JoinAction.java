@@ -17,9 +17,21 @@ public class JoinAction implements IAction {
 		ServletContext ctx  = req.getServletContext();
 		
 		UserDao userDao = (UserDao) ctx.getAttribute("userDao");
+		/*
+		 * 1. 아이디 중복 여부
+		 * 
+		 * 2. 이메일 검증코드
+		 * 
+		 * 3. 비번 검증 코드
+		 * 
+		 */
+		String id = req.getParameter("id");
+		String pass = req.getParameter("password");
+		System.out.println(id + ", " + pass);
+		userDao.insertUser(id, pass);
 		
-		
-		return "/WEB-INF/welcome.jsp";
+		//    /success
+		return "forward:/WEB-INF/welcome.jsp";
 	}
 
 }
