@@ -10,11 +10,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import github.kcs.board.BoardContext;
+import github.kcs.board.action.DeleteAction;
+import github.kcs.board.action.IAction;
+import github.kcs.board.action.JoinAction;
+import github.kcs.board.action.PageEditAction;
 import github.kcs.board.action.PageListAction;
+import github.kcs.board.action.PageReadAction;
 import github.kcs.board.dao.PostDao;
 import github.kcs.board.dao.UserDao;
 import github.kcs.board.vo.PostVO;
 import github.kcs.board.vo.UserVO;
+
+import static github.kcs.board.util.WebUtil.*;
 
 /**
  * Servlet implementation class FrontController
@@ -29,6 +37,8 @@ import github.kcs.board.vo.UserVO;
 							  , "/edit"		//글수정   (게시글 글수정 화면으로 이동)
 							  , "/delete"	//글삭제   (게시글 글삭제 /삭제 후 리스트로 이동)   
 							  , "/doEdit"	//글수정	 (게시글 수정기능 / 수정 후 상세보기 화면으로 이동) 저장 후 상세 화면으로 이동하지 않음
+							  , "/join"	
+							  , "/doJoin"	
 						  } )
 public class FrontController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -51,25 +61,27 @@ public class FrontController extends HttpServlet {
 		String uri = fullPath.substring(ctxpapth.length());
 		
 		ServletContext context = request.getServletContext();
-		PostDao postDao = (PostDao) context.getAttribute("postDao");
-		UserDao userDao = (UserDao) context.getAttribute("userDao"); //userDao를 BoardInitListener에서 선언 
+		BoardContext btx = (BoardContext) context.getAttribute("BOARD_CTX");
+		
+		PostDao postDao = btx.getPostDao();
+		UserDao userDao = btx.getUserDao(); 
 		if ( uri.equals("/list")) {
 			/*
 			 * 게시판 리스트를 보여줍니다.
 			 */
-			PageListAction listAction = new PageListAction();
-			listAction.process(request, response);
+			IAction listAction = new PageListAction();
+			String nextUrl = listAction.proccess(btx, request, response);
+			moveNext(request, response, nextUrl);
 		} else if ( uri.equals("/write")) {
 			/*
 			 * 글쓰기 화면으로 이동
 			 */
-			UserVO fakeUser = new UserVO("fake", "1111");
-			request.getRequestDispatcher("WEB-INF/write.jsp").forward(request, response);
+			request.getRequestDispatcher("WEB-INF/write.jsp").forward(request, response);				
+			
 		} else if(uri.equals("/login")){
 			/*
 			 * FIXME 만일 현재 사용자가 이미 로그인을 했다면 아래와 같이 로그인 페이지로 포워등을 하면 안됩니다. 
 			 */
-			
 			request.getRequestDispatcher("WEB-INF/login.jsp").forward(request, response);
 		} else if(uri.equals("/logout")){
 			HttpSession session = request.getSession();
@@ -80,30 +92,23 @@ public class FrontController extends HttpServlet {
 			/*
 			 * 게시판 수정 화면으로 이동합니다.
 			 */
-			String pnum = request.getParameter("pnum");
-			System.out.println("edit_pnum: " + pnum);
-			PostVO post = null;
-			try {			
-				post = postDao.findBySeq ( Integer.parseInt(pnum) );
-			} catch( NumberFormatException e) {
-				e.printStackTrace();
-			}
-			request.setAttribute("p", post);
-			request.getRequestDispatcher("WEB-INF/edit.jsp").forward(request, response);
-		} else if ( "/delete".equals(uri) ) {
+			PageEditAction read = new PageEditAction();
+			String nextUrl = read.proccess(btx, request, response);
+			moveNext (request, response, nextUrl );
+			
+		}  else if ( uri.equals("/join")) {
 			/*
-			 * 게시글 글삭제 
+			 * 글쓰기 화면으로 이동
 			 */
-			int seq = Integer.parseInt(request.getParameter("pnum"));  
-			postDao.deletePost ( seq );
-			response.sendRedirect("list");
+			request.getRequestDispatcher("WEB-INF/join.jsp").forward(request, response);				
+			
 		}
-		
 		else {
 			response.getWriter().append("Served at: ").append(request.getContextPath());
 			
 		}
 	}
+
 
 	/**
 	 * POST 시스템의 상태가 변경되는 요청인 경우( 글쓰기, 편집, 삭제 insert, udpate, delete)
@@ -124,8 +129,9 @@ public class FrontController extends HttpServlet {
 		String uri = fullPath.substring(ctxpapth.length());
 		
 		ServletContext context = request.getServletContext();
-		PostDao postDao = (PostDao) context.getAttribute("postDao");
-		UserDao userDao = (UserDao) context.getAttribute("userDao");
+		BoardContext btx = (BoardContext) context.getAttribute("BOARD_CTX");
+		PostDao postDao = btx.getPostDao();
+		UserDao userDao = btx.getUserDao();
 		//doGet(request, response);
 		if ( "/doWrite".equals(uri) ) {
 			/*
@@ -135,12 +141,15 @@ public class FrontController extends HttpServlet {
 			String title = request.getParameter("title");
 			String content = request.getParameter("content");
 			//Q&A 2016.05.19 형변환을 해야 하는 이유를 모르겠습니다.
-			int seq = Integer.parseInt(request.getParameter("seq"));  
-			postDao.insertPost ( title, content, seq );
+//			int seq = Integer.parseInt(request.getParameter("seq"));  
+			HttpSession session = request.getSession();
+			UserVO loginUser = (UserVO) session.getAttribute("loginUser");
+			postDao.insertPost ( title, content, loginUser.getSeq() );
+			response.sendRedirect(request.getContextPath() + "/list"); // 클라이언트한테 저 url로 다시 가라고 함.
+			
 			/*
 			 * 2. db로 새글을 입력합니다.
 			 */
-			response.sendRedirect(request.getContextPath() + "/list"); // 클라이언트한테 저 url로 다시 가라고 함.
 		}else if(uri.equals("/doLogin")){
 			/*
 			 * 로그인 화면으로 이동합니다.
@@ -170,18 +179,18 @@ public class FrontController extends HttpServlet {
 			/*
 			 * 게시글 상세화면으로 이동합니다.
 			 */
-			String pnum = request.getParameter("pnum");
-			System.out.println("read_pnum: " + pnum);
-			PostVO post = null;
-			try {
-//				int postSeq = 1;/
-//				postSeq = Integer.parseInt(pnum);				
-				post = postDao.findBySeq ( Integer.parseInt(pnum) );
-			} catch( NumberFormatException e) {
-				e.printStackTrace();
-			}
-			request.setAttribute("p", post);
-			request.getRequestDispatcher("WEB-INF/read.jsp").forward(request, response);
+			PageReadAction read = new PageReadAction();
+			String nextUrl = read.proccess(btx, request, response);
+			moveNext (request, response, nextUrl );
+			
+		} else if ( uri.equals("/doJoin")) {
+			/*
+			 * 게시글 상세화면으로 이동합니다.
+			 */
+			JoinAction action = new JoinAction();
+			String nextUrl = action.proccess(null, request, response);
+			moveNext (request, response, nextUrl );
+			
 		} else if ( "/doEdit".equals(uri) ) {
 			/*
 			 * 게시글 글수정 저장
@@ -201,12 +210,33 @@ public class FrontController extends HttpServlet {
 				e.printStackTrace();
 			}
 			request.setAttribute("p", post);
-			request.getRequestDispatcher("WEB-INF/read.jsp").forward(request, response);
+//			request.getRequestDispatcher("WEB-INF/read.jsp").forward(request, response);
+//			response.setStatus(307);
+//			response.setHeader("Location", request.getContextPath() + "/read?pnum=13" );
+			response.sendRedirect(request.getContextPath()+"/list");
+		} else if ( "/delete".equals(uri) ) {
+			/*
+			 * 게시글 글삭제 
+			 */
+			IAction action = new DeleteAction();
+			String nextUrl = action.proccess(btx, request, response);
+			moveNext(request, response, nextUrl);
 		}
 		
 		else {
 			response.getWriter().append("Unknown URI: ").append(request.getContextPath());
 		}
+	}
+
+	private void moveNext(HttpServletRequest request, HttpServletResponse response, String nextUrl) throws ServletException, IOException {
+		if ( nextUrl.startsWith("forward:")){
+			request.getRequestDispatcher( nextUrl.substring("forward:".length()).trim() ).forward(request, response);				
+		} else if ( nextUrl.startsWith("redirect:")) {
+			response.sendRedirect(nextUrl.substring("redirect:".length()).trim());
+		} else {
+			System.out.println("what is this?: " + nextUrl);
+		}
+		
 	}
 
 }

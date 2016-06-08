@@ -107,4 +107,24 @@ public class UserDao {
 			DBUtil.release(con, stmt, rs);
 		}
 	}
+	
+	public void insertUser ( String name, String password) {
+		String query = "insert into users (id,password) values(?,?) "; // inser, update, delete
+		
+		Connection con = null;   //getConnection();
+		PreparedStatement stmt = null;
+		PostVO p = null;
+		try {
+			con = ds.getConnection();
+			stmt = con.prepareStatement(query);
+			stmt.setString(1, name);
+			stmt.setString(2, password);
+			stmt.executeUpdate();
+	
+		} catch (SQLException e) {
+			throw new RuntimeException("fail to load", e);
+		} finally {
+			DBUtil.release(con, stmt, null);
+		}
+	}
 }

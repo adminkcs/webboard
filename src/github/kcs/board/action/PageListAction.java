@@ -6,13 +6,18 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import github.kcs.board.BoardContext;
 import github.kcs.board.dao.PostDao;
 
-public class PageListAction {
+public class PageListAction implements IAction {
 	
 //	private PostDao dao = new PostDao() ;
 	
-	public void process ( HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
+	/* (non-Javadoc)
+	 * @see github.kcs.board.action.IAction#process(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+	 */
+	@Override
+	public String proccess ( BoardContext btx, HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
 		PostDao dao = (PostDao) req.getServletContext().getAttribute("postDao");
 		String cname = req.getParameter("c");
 		
@@ -22,6 +27,6 @@ public class PageListAction {
 		
 		req.setAttribute("category", cname);
 		req.setAttribute("allPosts", dao.findAll());
-		req.getRequestDispatcher("/WEB-INF/views/list.jsp").forward(req, res);
+		return "forward:/WEB-INF/views/list.jsp";
 	}
 }
