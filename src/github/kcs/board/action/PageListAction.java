@@ -29,17 +29,13 @@ public class PageListAction implements IAction {
 		if ( cname == null ) {
 			cname = "free";
 		}
-//		int pnum = Integer.parseInt(req.getParameter("pnum"));
 		/*
 		 * 1단계 - 글 자체에 대해 페이지내이션 적용
 		 */
 		int pnum = WebUtil.Int(req, "pnum", 1);
 		int T = btx.getDefaultPageSize() ;  // 한페이지당 보여줄 글의 갯수
 		int N = dao.countPage();
-		int offset = -1;
-		int length = -1;
-		offset = (pnum -1) * T;
-		length = T;
+		int [] pgn = getPagenation(N, T, pnum);
 		int totalPage = N / T + ( N % T > 0 ? 1 : 0);
 		
 		/*
@@ -55,7 +51,30 @@ public class PageListAction implements IAction {
 		req.setAttribute("totalPage", totalPage);
 		req.setAttribute("curPage", pnum);
 		req.setAttribute("pageNums", pageNums);
-		req.setAttribute("allPosts", dao.findByRange(offset, length));
+		req.setAttribute("allPosts", dao.findByRange(pgn[0], pgn[1]));
 		return "forward:/WEB-INF/views/list.jsp";
+	}
+	/**
+	 * 
+	 * @param N 전체 글 갯수
+	 * @param T 한페이당 보여질 글의 갯수
+	 * @param pnum 보려고 하는 페이지 번호
+	 * @return offset과 length 를 나타내는 길이가 2인 배열
+	 */
+	int [] getPagenation ( int N, int T, int pnum ) {
+		int [] pgn = new int[2]; // 0번째값은 offset, 1번째값은 length
+		int offset = (pnum -1) * T;
+		int length = T;
+		return new int[]{offset, length} ;
+	}
+	
+	/**
+	 * 전체 페이지 갯수를 구합니다.
+	 * @param nPost 전체 글의 갯수
+	 * @param T 한페이당 보여질 글의 갯수
+	 * @return 전체 페이지 갯수
+	 */
+	int countTotalPage ( int nPost, int T) {
+		return nPost / T + ( nPost % T > 0 ? 1 : 0);
 	}
 }
