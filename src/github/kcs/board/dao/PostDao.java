@@ -113,6 +113,48 @@ public class PostDao {
 		
 //		return samples;
 	}
+	
+	public List<PostVO> findByRange( int offset, int length ) {
+		String query = "SELECT SEQ"
+		          + ", TITLE"
+		          + ", CONTENT"
+		          + ", VIEWCOUNT"
+		          + ", CREATIONTIME"
+		          + ", WRITER "
+		       + "FROM POSTS "
+		       + "ORDER BY CREATIONTIME DESC "
+		       + "LIMIT ?, ?";
+
+		Connection con =  null; //getConnection();
+		PreparedStatement stmt = null;
+		ResultSet rs  = null;
+		try {
+			con = ds.getConnection();
+			stmt = con.prepareStatement(query);
+			stmt.setInt(1, offset);
+			stmt.setInt(2, length);
+			
+			rs = stmt.executeQuery();
+			List<PostVO> posts = new ArrayList<>();
+			while(rs.next()){
+				Integer seq = rs.getInt("seq");
+				String title = rs.getString("title");
+				String content = rs.getString("content");
+				Integer viewcount = rs.getInt("viewcount");
+				String creationtime = rs.getString("creationtime");
+				
+				UserVO writer = userDao.findBySeq(rs.getInt("writer"));
+				PostVO p = new PostVO(seq, title, content, viewcount, creationtime, writer);
+				posts.add(p);
+			}
+			
+			return posts;
+		} catch (SQLException e) {
+			throw new RuntimeException("fail to load", e);
+		} finally {
+			DBUtil.release(con, stmt, rs);
+		}
+	}
 	/**
 	 * 주어진 글번호에 해당하는 post 를 반환합니다. 없으면 null을 반환합니다.
 	 * @param seq
@@ -255,6 +297,26 @@ public class PostDao {
 		DBUtil.release(con, stmt, null);
 	}		
 		
+	}
+
+	public int countPage() {
+		String query = "select count(seq) from posts";
+
+		Connection con =  null; //getConnection();
+		PreparedStatement stmt = null;
+		ResultSet rs  = null;
+		try {
+			con = ds.getConnection();
+			stmt = con.prepareStatement(query);
+			rs = stmt.executeQuery();
+			rs.next();
+			return rs.getInt(1);
+			
+		} catch (SQLException e) {
+			throw new RuntimeException("fail to load", e);
+		} finally {
+			DBUtil.release(con, stmt, rs);
+		}
 	}
 
 
