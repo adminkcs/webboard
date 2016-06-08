@@ -20,27 +20,7 @@ import github.kcs.board.vo.UserVO;
  */
 public class PostDao {
 	
-/*	static {
-		try {
-//			Class.forName("org.mariadb.jdbc.Driver");
-			DriverManager.registerDriver(new org.mariadb.jdbc.Driver());
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}*/
-
-	
 	private UserDao userDao; // = new UserDao();
-	
-	private UserVO demoUser = new UserVO(1000, "dkdkdk", "111", "2016-02-22 12:22:12");
-	
-	private List<PostVO> samples = new ArrayList<>();
-	{
-//		samples.add(new PostVO(1005, "가나다","본문", 3323, "2016-04-22", "James"));
-//		samples.add(new PostVO(1002, "가나다","본문", 3323, "2016-04-22", "James"));
-//		samples.add(new PostVO(1001, "가나다22","본문", 3323, "2016-04-22", "James"));
-//		samples.add(new PostVO(1000, "가나다323","본문", 3323, "2016-04-22", "James"));
-	}
 	
 	private DataSource ds;
 	public PostDao ( UserDao userDao ) {
