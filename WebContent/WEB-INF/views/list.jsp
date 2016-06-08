@@ -13,6 +13,14 @@
 .menu {
 	background-color: #ff0;
 }
+
+#page-area {
+	margin : 10px;
+}
+#page-area .pnum {
+	padding : 4px;
+	background-color: yellow;
+}
 </style>
 
 <script type="text/javascript">
@@ -32,6 +40,7 @@ function go ( pnum ) {
 <input type="hidden" name="pnum" id="pnum" value="1005">
 </form>
 <h3>${category }게시판 리스트 출력[2]</h3>
+<b> ${curPage} of ${totalPage } page</b>
 <table border="1">
 	<tr>
 		<td>글번호</td>
@@ -52,6 +61,14 @@ function go ( pnum ) {
 	</tr>	
 </c:forEach>
 </table>
+<div id="page-area">
+<c:forEach var="l" items="${pageNums }">
+	<span class="pnum">
+		<c:if test="${l != curPage}"> <a href="/webboard/list?pnum=${l }">${l }</a></c:if>
+		<c:if test="${l == curPage}"><b>${l }</b></c:if>
+	</span> 
+</c:forEach>
+</div>
 <%-- 기존 리스트 뽑아내는 것
 <%
 	List<PostVO> posts = (List<PostVO>) request.getAttribute("allPosts");

@@ -44,12 +44,15 @@ public class BoardInitListener implements ServletContextListener {
     	System.out.println("board 웹 애플리케이션이 시작되었습니다.");
     	
     	ServletContext sc = sce.getServletContext();
+    	BoardContext btx = new BoardContext();
+    	
     	/* dao 초기화 로직 */
     	
     	DataSource ds = initDataSource();
-    	initDao ( sc, ds );
+    	initDao ( sc, btx, ds );
     	
-    	
+    	/* pagenation: 한페이지에 10개씩 */
+    	btx.setDefaultPageSize(10);
     }
 
 	private DataSource initDataSource() {
@@ -72,9 +75,9 @@ public class BoardInitListener implements ServletContextListener {
 		}
 	}
 
-	private void initDao(ServletContext sc, DataSource ds) {
+	private void initDao(ServletContext sc, BoardContext btx, DataSource ds) {
 		/* 사용자 dao 호출 */
-		BoardContext btx = new BoardContext();
+		
 		UserDao userDao = new UserDao(ds);
 		btx.setUserDao ( userDao );
 		
