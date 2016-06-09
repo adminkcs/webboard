@@ -55,14 +55,14 @@ public class PostDao {
 	 * @return
 	 */
 	public List<PostVO> findAll() {
-		String query = "SELECT SEQ"
-				          + ", TITLE"
-				          + ", CONTENT"
-				          + ", VIEWCOUNT"
-				          + ", CREATIONTIME"
-				          + ", WRITER "
-				       + "FROM POSTS "
-				       + "ORDER BY CREATIONTIME DESC";
+		String query = "SELECT SEQ                 "
+				     + "     , TITLE               "
+				     + "     , CONTENT             "
+				     + "     , VIEWCOUNT           "
+				     + "     , CREATIONTIME        "
+				     + "     , WRITER              "
+				     + "  FROM POSTS               "
+				     + " ORDER BY CREATIONTIME DESC";
 		
 		Connection con =  null; //getConnection();
 		PreparedStatement stmt = null;
@@ -95,15 +95,15 @@ public class PostDao {
 	}
 	
 	public List<PostVO> findByRange( int offset, int length ) {
-		String query = "SELECT SEQ"
-		          + ", TITLE"
-		          + ", CONTENT"
-		          + ", VIEWCOUNT"
-		          + ", CREATIONTIME"
-		          + ", WRITER "
-		       + "FROM POSTS "
-		       + "ORDER BY CREATIONTIME DESC "
-		       + "LIMIT ?, ?";
+		String query = "SELECT SEQ                 "
+		             + "     , TITLE               "
+		             + "     , CONTENT             "
+		             + "     , VIEWCOUNT           "
+		             + "     , CREATIONTIME        "
+		             + "     , WRITER              "
+		             + " FROM POSTS                "
+		             + "ORDER BY CREATIONTIME DESC "
+		             + "LIMIT ?, ?                 ";
 
 		Connection con =  null; //getConnection();
 		PreparedStatement stmt = null;
@@ -258,8 +258,8 @@ public class PostDao {
 
 	public void updateViewCount(Integer postSeq, int viewCount) {
 		String query = "UPDATE POSTS         "
-			     + "SET VIEWCOUNT = ?        "
-			     + "WHERE SEQ = ?        "; // inser, update, delete
+			         + "   SET VIEWCOUNT = ? "
+			         + " WHERE SEQ = ?       "; // inser, update, delete
 	
 	Connection con = null;   //getConnection();
 	PreparedStatement stmt = null;

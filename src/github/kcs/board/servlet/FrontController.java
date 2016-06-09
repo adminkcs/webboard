@@ -11,16 +11,15 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import github.kcs.board.BoardContext;
+import github.kcs.board.action.EditAction;
 import github.kcs.board.action.DeleteAction;
 import github.kcs.board.action.IAction;
 import github.kcs.board.action.JoinAction;
+import github.kcs.board.action.LoginAction;
 import github.kcs.board.action.PageEditAction;
 import github.kcs.board.action.PageListAction;
 import github.kcs.board.action.PageReadAction;
-import github.kcs.board.dao.PostDao;
-import github.kcs.board.dao.UserDao;
-import github.kcs.board.vo.PostVO;
-import github.kcs.board.vo.UserVO;
+import github.kcs.board.action.WriteAction;
 
 import static github.kcs.board.util.WebUtil.*;
 
@@ -37,8 +36,8 @@ import static github.kcs.board.util.WebUtil.*;
 							  , "/edit"		//글수정   (게시글 글수정 화면으로 이동)
 							  , "/delete"	//글삭제   (게시글 글삭제 /삭제 후 리스트로 이동)   
 							  , "/doEdit"	//글수정	 (게시글 수정기능 / 수정 후 상세보기 화면으로 이동) 저장 후 상세 화면으로 이동하지 않음
-							  , "/join"	
-							  , "/doJoin"	
+							  , "/join"		//회원가입 (회원가입화면으로 이동)
+							  , "/doJoin"	//회원가입 (회원가입 가입 후 웰컴화면으로 이동)
 						  } )
 public class FrontController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -63,8 +62,6 @@ public class FrontController extends HttpServlet {
 		ServletContext context = request.getServletContext();
 		BoardContext btx = (BoardContext) context.getAttribute("BOARD_CTX");
 		
-		PostDao postDao = btx.getPostDao();
-		UserDao userDao = btx.getUserDao(); 
 		if ( uri.equals("/list")) {
 			/*
 			 * 게시판 리스트를 보여줍니다.
@@ -80,6 +77,7 @@ public class FrontController extends HttpServlet {
 			
 		} else if(uri.equals("/login")){
 			/*
+			 * 로그인 화면으로 이동
 			 * FIXME 만일 현재 사용자가 이미 로그인을 했다면 아래와 같이 로그인 페이지로 포워등을 하면 안됩니다. 
 			 */
 			request.getRequestDispatcher("WEB-INF/login.jsp").forward(request, response);
@@ -130,51 +128,26 @@ public class FrontController extends HttpServlet {
 		
 		ServletContext context = request.getServletContext();
 		BoardContext btx = (BoardContext) context.getAttribute("BOARD_CTX");
-		PostDao postDao = btx.getPostDao();
-		UserDao userDao = btx.getUserDao();
+
 		//doGet(request, response);
 		if ( "/doWrite".equals(uri) ) {
 			/*
 			 * 게시글 글쓰기 저장
 			 */
-			// 실제 글쓴 내용이 옵니다.
-			String title = request.getParameter("title");
-			String content = request.getParameter("content");
-			//Q&A 2016.05.19 형변환을 해야 하는 이유를 모르겠습니다.
-//			int seq = Integer.parseInt(request.getParameter("seq"));  
-			HttpSession session = request.getSession();
-			UserVO loginUser = (UserVO) session.getAttribute("loginUser");
-			postDao.insertPost ( title, content, loginUser.getSeq() );
-			response.sendRedirect(request.getContextPath() + "/list"); // 클라이언트한테 저 url로 다시 가라고 함.
+			IAction action = new WriteAction();
+			String nextUrl = action.proccess(btx, request, response);
+			moveNext(request, response, nextUrl);
 			
-			/*
-			 * 2. db로 새글을 입력합니다.
-			 */
 		}else if(uri.equals("/doLogin")){
 			/*
-			 * 로그인 화면으로 이동합니다.
+			 * 로그인을 합니다.
 			 * 톰캣을 클러스터링으로 구성할때가 있습니다.
 			 */
-			String id = request.getParameter("id");
-			String password = request.getParameter("password");
-			UserVO loginUser = userDao.login ( id, password );
-			System.out.println(loginUser);
-			// session에다가 담아둘겁니다.
-			if ( loginUser != null ) {
-				/*
-				 * 1. 로그인이 성공했으면
-				 */
-				HttpSession session = request.getSession();
-				session.setAttribute("loginUser", loginUser);
-				
-				response.sendRedirect(request.getContextPath()+"/list");
-			} else {
-				response.sendRedirect(request.getContextPath()+"/login");
-				
-			}
-			/*
-			 * 2. 실패했으면 ?
-			 */
+
+			IAction action = new LoginAction();
+			String nextUrl = action .proccess(btx, request, response);
+			moveNext(request, response, nextUrl);
+	
 		} else if ( uri.equals("/read")) {
 			/*
 			 * 게시글 상세화면으로 이동합니다.
@@ -185,7 +158,7 @@ public class FrontController extends HttpServlet {
 			
 		} else if ( uri.equals("/doJoin")) {
 			/*
-			 * 게시글 상세화면으로 이동합니다.
+			 * 회원가입(등록)
 			 */
 			JoinAction action = new JoinAction();
 			String nextUrl = action.proccess(null, request, response);
@@ -193,27 +166,12 @@ public class FrontController extends HttpServlet {
 			
 		} else if ( "/doEdit".equals(uri) ) {
 			/*
-			 * 게시글 글수정 저장
+			 * 게시글 수정
 			 */
-			// 실제 글쓴 내용이 옵니다.
-			String title = request.getParameter("title");
-			String content = request.getParameter("content");
-			int seq = Integer.parseInt(request.getParameter("pnum"));  
-			postDao.updatePost ( title, content, seq );
-			/*
-			 * 2. db로 새글을 입력합니다.
-			 */
-			PostVO post = null;
-			try {
-				post = postDao.findBySeq (seq);
-			} catch( NumberFormatException e) {
-				e.printStackTrace();
-			}
-			request.setAttribute("p", post);
-//			request.getRequestDispatcher("WEB-INF/read.jsp").forward(request, response);
-//			response.setStatus(307);
-//			response.setHeader("Location", request.getContextPath() + "/read?pnum=13" );
-			response.sendRedirect(request.getContextPath()+"/list");
+			IAction action = new EditAction();
+			String nextUrl = action.proccess(btx, request, response);
+			moveNext(request, response, nextUrl);
+			
 		} else if ( "/delete".equals(uri) ) {
 			/*
 			 * 게시글 글삭제 
