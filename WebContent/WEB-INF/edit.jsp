@@ -13,15 +13,15 @@
 
 <script type="text/javascript">
 function doRead(){
-	document.read.method = "POST";
-	document.read.action = "read";
-	document.read.submit();
+    document.read.method = "POST";
+    document.read.action = "read";
+    document.read.submit();
 }
 
 function doEdit(pnum){
-	document.read.method = "POST";
-	document.read.action = "doEdit";
-	document.read.submit();
+    document.read.method = "POST";
+    document.read.action = "doEdit";
+    document.read.submit();
 }
 </script>
 
@@ -29,25 +29,25 @@ function doEdit(pnum){
 <jsp:include page="/WEB-INF/header.jsp"></jsp:include>
  <form name="read">
  <input type="hidden" name="pnum" value=${p.seq }>
- 	<table border=1>
-		 <c:if test="${ not empty p }">
-			 <tr>
-	 			<td>제목</td>
-	 			<td><input type="text" name="title" value=${p.title }></td>
-	 			<td>카테고리</td>
-	 			<td><input type="text" name="category" value=${p.category }></td>
-	 		 </tr>
-			 <tr>
-	 			<td>내용</td>
-	 			<td colspan="3"><textarea rows="20" cols="100%" name="content">${p.content}</textarea></td>
-	 		 </tr>
-		 </c:if>
-		 <c:if test="${ empty p }">
-		 <h3>글 없음</h3>
-		 </c:if>
- 	</table>
-		<c:if test="${ p.writer.id eq loginUser.id  }"><li><a href="JavaScript:doEdit()">저장하기</a></c:if><!-- 지금 보고 있는 글을 쓴 사람과 로그인한 사람이 같을때에만 -->
-		<c:if test="${ p.writer eq loginUser  }"><li><a href="JavaScript:doRead()">저장취소</a></c:if><!-- 다시 상세보기로 이동 -->
+     <table border=1>
+         <c:if test="${ not empty p }">
+             <tr>
+                 <td>제목</td>
+                 <td><input type="text" name="title" value=${p.title }></td>
+                 <td>카테고리</td>
+                 <td><input type="text" name="category" value=${p.category }></td>
+             </tr>
+             <tr>
+                 <td>내용</td>
+                 <td colspan="3"><textarea rows="20" cols="100%" name="content">${p.content}</textarea></td>
+              </tr>
+         </c:if>
+         <c:if test="${ empty p }">
+         <h3>글 없음</h3>
+         </c:if>
+     </table>
+        <c:if test="${ p.writer.id eq loginUser.id  }"><li><a href="JavaScript:doEdit()">저장하기</a></c:if><!-- 지금 보고 있는 글을 쓴 사람과 로그인한 사람이 같을때에만 -->
+        <c:if test="${ p.writer eq loginUser  }"><li><a href="JavaScript:doRead()">저장취소</a></c:if><!-- 다시 상세보기로 이동 -->
 </form>
 </body>
 </html>

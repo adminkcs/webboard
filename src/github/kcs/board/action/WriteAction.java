@@ -14,23 +14,23 @@ import github.kcs.board.vo.UserVO;
 
 public class WriteAction implements IAction {
 
-	@Override
-	public String proccess(BoardContext btx, HttpServletRequest req, HttpServletResponse res)
-			throws ServletException, IOException {
-		
-		ServletContext context = req.getServletContext();
-		PostDao postDao = (PostDao) context.getAttribute("postDao");
-		
-		String title = req.getParameter("title");
-		String content = req.getParameter("content");
-		String category = req.getParameter("category");
-		
-		//파라미터를 변조할수 있기에 세션에서 받아옵니다.
-		HttpSession session = req.getSession();
-		UserVO loginUser = (UserVO) session.getAttribute("loginUser");
-		postDao.insertPost ( title, content, loginUser.getSeq() , category);
-		
-		return "redirect:" + req.getContextPath() + "/list";
-	}
+    @Override
+    public String proccess(BoardContext btx, HttpServletRequest req, HttpServletResponse res)
+            throws ServletException, IOException {
+        
+        ServletContext context = req.getServletContext();
+        PostDao postDao = (PostDao) context.getAttribute("postDao");
+        
+        String title = req.getParameter("title");
+        String content = req.getParameter("content");
+        String category = req.getParameter("category");
+        
+        //파라미터를 변조할수 있기에 세션에서 받아옵니다.
+        HttpSession session = req.getSession();
+        UserVO loginUser = (UserVO) session.getAttribute("loginUser");
+        postDao.insertPost ( title, content, loginUser.getSeq() , category);
+        
+        return "redirect:" + req.getContextPath() + "/list";
+    }
 
 }

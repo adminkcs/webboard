@@ -10,6 +10,6 @@ import github.kcs.board.BoardContext;
 
 public interface IAction {
 
-	String proccess(BoardContext btx, HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException;
+    String proccess(BoardContext btx, HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException;
 
 }
