@@ -14,14 +14,17 @@
 <input type="hidden" name="seq" value=${loginUser.seq }>
 <table>
 	<tr>
+		<td>제목</td>
 		<td><input type="text" name = "title"></td>
-	</tr>
-	
-	<tr>
-		<td><textarea rows="20" cols="40" name="content"></textarea></td>
+		<td>카테고리</td>
+		<td><input type="text" name = "category"></td>
 	</tr>
 	<tr>
-		<td><input type="submit" value="저장"></td>
+		<td>내용</td>
+		<td  colspan="3"><textarea rows="20" cols="100%" name="content"></textarea></td>
+	</tr>
+	<tr>
+		<td colspan="4" align="right"><input type="submit" value="저장"></td>
 	</tr>
 </table>
 </form>

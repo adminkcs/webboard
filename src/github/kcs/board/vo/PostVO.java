@@ -35,6 +35,7 @@ public class PostVO {
 	private String content ;
 //	private String writer;
 	private UserVO writer;
+	private String category;
 	
 	/*
 	public PostVO(Integer seq, String title, String content, Integer viewCount, String creationTime, String writer) {
@@ -47,7 +48,7 @@ public class PostVO {
 		this.writer = writer;
 	}
 	*/
-	public PostVO(Integer seq, String title, String content, Integer viewCount, String creationTime, UserVO writer) {
+	public PostVO(Integer seq, String title, String content, Integer viewCount, String creationTime, UserVO writer, String category) {
 		// TODO Auto-generated constructor stub
 		this.seq = seq;
 		this.title = title;
@@ -55,6 +56,7 @@ public class PostVO {
 		this.viewCount = viewCount;
 		this.creationTime = creationTime;
 		this.writer = writer;
+		this.category = category;
 	}
 	public Integer getSeq() {
 		return seq;
@@ -93,10 +95,17 @@ public class PostVO {
 	public void setWriter(UserVO writer) {
 		this.writer = writer;
 	}
+	
+	public String getCategory() {
+		return category;
+	}
+	public void setCategory(String category) {
+		this.category = category;
+	}
 	@Override
 	public String toString() {
 		return "PostVO [seq=" + seq + ", title=" + title + ", viewCount=" + viewCount + ", creationTime=" + creationTime
-				+ ", writer=" + writer + "]";
+				+ ", content=" + content + ", writer=" + writer + ", category=" + category + "]";
 	}
 	
 	

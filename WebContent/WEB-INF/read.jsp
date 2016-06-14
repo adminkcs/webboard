@@ -37,10 +37,12 @@ function doDel(){
 			 <tr>
 	 			<td>제목</td>
 	 			<td>${p.title}</td>
+	 			<td>카테고리</td>
+	 			<td>${p.category}</td>
 	 		 </tr>
 			 <tr>
 	 			<td>내용</td>
-	 			<td><textarea rows="20" cols="40" disabled="disabled">${p.content}</textarea></td>
+	 			<td colspan="3"><textarea rows="20" cols="40" disabled="disabled">${p.content}</textarea></td>
 	 		 </tr>
 		 </c:if>
 		 <c:if test="${ empty p }">

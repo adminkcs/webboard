@@ -7,6 +7,7 @@
 <title>로그인 페이지</title>
 </head>
 <body>
+<script type="text/javascript" src="/js/placeholders.min.js"></script> <!-- IE9 이하에서 placeholder태그 문제 해결 -->
 <!-- 상단 메뉴 시작  -->
 <jsp:include page="/WEB-INF/header.jsp"></jsp:include>
 <!-- 상단 메뉴 끝 -->

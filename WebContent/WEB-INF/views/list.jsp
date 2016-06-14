@@ -39,7 +39,7 @@ function go ( pnum ) {
 <form action="<%=request.getContextPath() %>/read" method="post" id="frm">
 <input type="hidden" name="pnum" id="pnum" value="1005">
 </form>
-<h3>${category }게시판 리스트 출력[2]</h3>
+<h3>${prePage }게시판 리스트 출력[2]</h3>
 <b> ${curPage} of ${totalPage } page</b>
 <table border="1">
 	<tr>
@@ -48,6 +48,7 @@ function go ( pnum ) {
 		<td>조회수</td>
 		<td>작성일</td>
 		<td>작성자</td>
+		<td>카테고리</td>
 	</tr>
 <c:forEach var="k" items="${allPosts }">
 	<tr>
@@ -58,6 +59,7 @@ function go ( pnum ) {
 		<td>${k.viewCount }</td>
 		<td>${k.time }</td> <!-- k.getCreationTime() -->
 		<td>${k.writer.id }</td> <!-- k.getWriter().getId() -->
+		<td>${k.category }</td> <!-- k.getWriter().getId() -->
 	</tr>	
 </c:forEach>
 </table>

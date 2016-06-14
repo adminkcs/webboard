@@ -47,7 +47,7 @@ public class PageListAction implements IAction {
 		for (int i = 1; i <= totalPage; i++) {
 			pageNums.add(i);
 		}
-		req.setAttribute("category", cname);
+		req.setAttribute("prePage", cname);
 		req.setAttribute("totalPage", totalPage);
 		req.setAttribute("curPage", pnum);
 		req.setAttribute("pageNums", pageNums);

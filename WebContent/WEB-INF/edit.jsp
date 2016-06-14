@@ -34,10 +34,12 @@ function doEdit(pnum){
 			 <tr>
 	 			<td>제목</td>
 	 			<td><input type="text" name="title" value=${p.title }></td>
+	 			<td>카테고리</td>
+	 			<td><input type="text" name="category" value=${p.category }></td>
 	 		 </tr>
 			 <tr>
 	 			<td>내용</td>
-	 			<td><textarea rows="20" cols="40" name="content">${p.content}</textarea></td>
+	 			<td colspan="3"><textarea rows="20" cols="100%" name="content">${p.content}</textarea></td>
 	 		 </tr>
 		 </c:if>
 		 <c:if test="${ empty p }">

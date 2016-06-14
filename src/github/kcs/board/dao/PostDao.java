@@ -61,6 +61,7 @@ public class PostDao {
 				     + "     , VIEWCOUNT           "
 				     + "     , CREATIONTIME        "
 				     + "     , WRITER              "
+				     + "     , CATEGORY              "
 				     + "  FROM POSTS               "
 				     + " ORDER BY CREATIONTIME DESC";
 		
@@ -78,9 +79,10 @@ public class PostDao {
 				String content = rs.getString("content");
 				Integer viewcount = rs.getInt("viewcount");
 				String creationtime = rs.getString("creationtime");
+				String category = rs.getString("categore");
 				
 				UserVO writer = userDao.findBySeq(rs.getInt("writer"));
-				PostVO p = new PostVO(seq, title, content, viewcount, creationtime, writer);
+				PostVO p = new PostVO(seq, title, content, viewcount, creationtime, writer, category);
 				posts.add(p);
 			}
 			
@@ -101,6 +103,7 @@ public class PostDao {
 		             + "     , VIEWCOUNT           "
 		             + "     , CREATIONTIME        "
 		             + "     , WRITER              "
+		             + "     , CATEGORY              "
 		             + " FROM POSTS                "
 		             + "ORDER BY CREATIONTIME DESC "
 		             + "LIMIT ?, ?                 ";
@@ -122,9 +125,10 @@ public class PostDao {
 				String content = rs.getString("content");
 				Integer viewcount = rs.getInt("viewcount");
 				String creationtime = rs.getString("creationtime");
+				String category = rs.getString("category");
 				
 				UserVO writer = userDao.findBySeq(rs.getInt("writer"));
-				PostVO p = new PostVO(seq, title, content, viewcount, creationtime, writer);
+				PostVO p = new PostVO(seq, title, content, viewcount, creationtime, writer, category);
 				posts.add(p);
 			}
 			
@@ -148,6 +152,7 @@ public class PostDao {
 				     + "     , VIEWCOUNT         "
 				     + "     , CREATIONTIME      "
 				     + "     , WRITER            "
+				     + "     , CATEGORY            "
 				     + "  FROM POSTS             "
 				     + "  WHERE SEQ = ?          ";
 		
@@ -166,9 +171,10 @@ public class PostDao {
 				String content = rs.getString("content");
 				Integer viewcount = rs.getInt("viewcount");
 				String creationtime = rs.getString("creationtime");
+				String category = rs.getString("category");
 				
 				UserVO writer = this.userDao.findBySeq(rs.getInt("writer"));
-				p = new PostVO(seq, title, content, viewcount, creationtime, writer);
+				p = new PostVO(seq, title, content, viewcount, creationtime, writer, category);
 			}
 			return p;
 		} catch (SQLException e) {
@@ -178,9 +184,9 @@ public class PostDao {
 		}
 	}
 	
-	public void insertPost ( String title, String content, int seq) {
-		String query = "INSERT INTO POSTS (TITLE, CONTENT, WRITER) "
-				     + "VALUES (?,?,?)                             "; // inser, update, delete
+	public void insertPost ( String title, String content, int seq, String category) {
+		String query = "INSERT INTO POSTS (TITLE, CONTENT, WRITER, CATEGORY) "
+				     + "VALUES (?,?,?,?)                             "; // inser, update, delete
 		
 		Connection con = null;   //getConnection();
 		PreparedStatement stmt = null;
@@ -191,7 +197,8 @@ public class PostDao {
 			stmt.setString(1, title);
 			stmt.setString(2, content);
 			stmt.setInt(3, seq);
-			int nInserted = stmt.executeUpdate();
+			stmt.setString(4, category);
+			stmt.executeUpdate();
 //			if ( nInserted < 1) {
 //				throw new SQLException("쓰기 실패. 글 안들어갔습니다.");
 //			}
@@ -202,10 +209,11 @@ public class PostDao {
 			DBUtil.release(con, stmt, null);
 		}
 	}
-	public void updatePost(String title, String content, int seq) {
+	public void updatePost(String title, String content, int seq, String category) {
 		String query = "UPDATE POSTS         "
 				     + "SET TITLE = ?        "
 				     + "  , CONTENT = ?      "
+				     + "  , CATEGORY = ?      "
 				     + "WHERE SEQ = ?        "; // inser, update, delete
 		
 		Connection con = null;   //getConnection();
@@ -217,6 +225,7 @@ public class PostDao {
 			stmt.setString(1, title);
 			stmt.setString(2, content);
 			stmt.setInt(3, seq);
+			stmt.setString(4, category);
 			int nInserted = stmt.executeUpdate();
 //			if ( nInserted < 1) {
 //				throw new SQLException("쓰기 실패. 글 안들어갔습니다.");
