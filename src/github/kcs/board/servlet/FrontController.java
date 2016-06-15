@@ -19,9 +19,8 @@ import github.kcs.board.action.LoginAction;
 import github.kcs.board.action.PageEditAction;
 import github.kcs.board.action.PageListAction;
 import github.kcs.board.action.PageReadAction;
+import github.kcs.board.action.PageWriteAction;
 import github.kcs.board.action.WriteAction;
-
-import static github.kcs.board.util.WebUtil.*;
 
 /**
  * Servlet implementation class FrontController
@@ -73,8 +72,9 @@ public class FrontController extends HttpServlet {
             /*
              * 글쓰기 화면으로 이동
              */
-            request.getRequestDispatcher("WEB-INF/write.jsp").forward(request, response);                
-            
+            IAction writeAction = new PageWriteAction();
+            String nextUrl = writeAction.proccess(btx, request, response);
+            moveNext(request, response, nextUrl);
         } else if(uri.equals("/login")){
             /*
              * 로그인 화면으로 이동

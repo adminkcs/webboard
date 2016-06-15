@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import github.kcs.board.vo.CodeVO;
 import github.kcs.board.vo.PostVO;
 import github.kcs.board.vo.UserVO;
 
@@ -79,10 +80,11 @@ public class PostDao {
                 String content = rs.getString("content");
                 Integer viewcount = rs.getInt("viewcount");
                 String creationtime = rs.getString("creationtime");
-                String category = rs.getString("categore");
+                int category = rs.getInt("category");
+                CodeVO cat = findCategory(con, category);
                 
                 UserVO writer = userDao.findBySeq(rs.getInt("writer"));
-                PostVO p = new PostVO(seq, title, content, viewcount, creationtime, writer, category);
+                PostVO p = new PostVO(seq, title, content, viewcount, creationtime, writer, cat);
                 posts.add(p);
             }
             
@@ -125,10 +127,11 @@ public class PostDao {
                 String content = rs.getString("content");
                 Integer viewcount = rs.getInt("viewcount");
                 String creationtime = rs.getString("creationtime");
-                String category = rs.getString("category");
-                
+                int category = rs.getInt("category");
+                CodeVO cat = findCategory(con, category);
+
                 UserVO writer = userDao.findBySeq(rs.getInt("writer"));
-                PostVO p = new PostVO(seq, title, content, viewcount, creationtime, writer, category);
+                PostVO p = new PostVO(seq, title, content, viewcount, creationtime, writer, cat);
                 posts.add(p);
             }
             
@@ -171,9 +174,10 @@ public class PostDao {
                 String content = rs.getString("content");
                 Integer viewcount = rs.getInt("viewcount");
                 String creationtime = rs.getString("creationtime");
-                String category = rs.getString("category");
+                Integer categoryFK = rs.getInt("category");
                 
                 UserVO writer = this.userDao.findBySeq(rs.getInt("writer"));
+                CodeVO category = findCategory (con, categoryFK);
                 p = new PostVO(seq, title, content, viewcount, creationtime, writer, category);
             }
             return p;
@@ -184,7 +188,60 @@ public class PostDao {
         }
     }
     
-    public void insertPost ( String title, String content, int seq, String category) {
+    private CodeVO findCategory(Connection con, Integer categoryFK) {
+        String query = "Select * from codes where cd_dvs_id = ?";
+        
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        CodeVO p = null;
+        try {
+            stmt = con.prepareStatement(query);
+            stmt.setInt(1, categoryFK);
+            rs = stmt.executeQuery();
+            if(rs.next()){
+//                seq = rs.getInt("seq");
+                int cdDvsId = rs.getInt("CD_DVS_ID");
+                String cdNm = rs.getString("CD_NM");
+
+                p = new CodeVO(cdDvsId, cdNm);
+            }
+            return p;
+        } catch (SQLException e) {
+            throw new RuntimeException("fail to load", e);
+        } finally {
+            DBUtil.release(null, stmt, rs);
+        }
+    }
+
+    public List<CodeVO> findAllCategory() {
+        String query = "Select * from codes order by cd_dvs_id";
+        
+        Connection con = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        CodeVO p = null;
+        try {
+             con = ds.getConnection();
+            stmt = con.prepareStatement(query);
+            rs = stmt.executeQuery();
+            List<CodeVO> categorys = new ArrayList<>();
+            while (rs.next()){
+//                seq = rs.getInt("seq");
+                int cdDvsId = rs.getInt("CD_DVS_ID");
+                String cdNm = rs.getString("CD_NM");
+
+                p = new CodeVO(cdDvsId, cdNm);
+                categorys.add(p);
+            }
+            return categorys;
+        } catch (SQLException e) {
+            throw new RuntimeException("fail to load", e);
+        } finally {
+            DBUtil.release(con, stmt, rs);
+        }
+    }
+    
+    public void insertPost ( String title, String content, int seq, int category) {
         String query = "INSERT INTO POSTS (TITLE, CONTENT, WRITER, CATEGORY) "
                      + "VALUES (?,?,?,?)                             "; // inser, update, delete
         
@@ -197,7 +254,7 @@ public class PostDao {
             stmt.setString(1, title);
             stmt.setString(2, content);
             stmt.setInt(3, seq);
-            stmt.setString(4, category);
+            stmt.setInt(4, category);
             stmt.executeUpdate();
 //            if ( nInserted < 1) {
 //                throw new SQLException("쓰기 실패. 글 안들어갔습니다.");

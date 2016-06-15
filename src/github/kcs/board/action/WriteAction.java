@@ -10,6 +10,7 @@ import javax.servlet.http.HttpSession;
 
 import github.kcs.board.BoardContext;
 import github.kcs.board.dao.PostDao;
+import github.kcs.board.util.WebUtil;
 import github.kcs.board.vo.UserVO;
 
 public class WriteAction implements IAction {
@@ -23,12 +24,12 @@ public class WriteAction implements IAction {
         
         String title = req.getParameter("title");
         String content = req.getParameter("content");
-        String category = req.getParameter("category");
+        int categoryFK = WebUtil.Int(req, "category", 1);
         
         //파라미터를 변조할수 있기에 세션에서 받아옵니다.
         HttpSession session = req.getSession();
         UserVO loginUser = (UserVO) session.getAttribute("loginUser");
-        postDao.insertPost ( title, content, loginUser.getSeq() , category);
+        postDao.insertPost ( title, content, loginUser.getSeq() , categoryFK);
         
         return "redirect:" + req.getContextPath() + "/list";
     }

@@ -10,6 +10,7 @@ import javax.servlet.http.HttpSession;
 
 import github.kcs.board.BoardContext;
 import github.kcs.board.dao.PostDao;
+import github.kcs.board.util.WebUtil;
 import github.kcs.board.vo.UserVO;
 
 public class EditAction implements IAction {
@@ -23,7 +24,7 @@ public class EditAction implements IAction {
 
         String title = req.getParameter("title");
         String content = req.getParameter("content");
-        String category = req.getParameter("category");
+        int category = WebUtil.Int(req, "category", 1);
 		
         //글쓴이를 변조할수 있기에 세션에서 받아옵니다
         HttpSession session = req.getSession(); 
