@@ -97,6 +97,52 @@ public class PostDao {
         
 //        return samples;
     }
+    public List<PostVO> findByRange(int offset, int length, int codeNum) {
+        String query = "SELECT SEQ                 "
+                + "     , TITLE               "
+                + "     , CONTENT             "
+                + "     , VIEWCOUNT           "
+                + "     , CREATIONTIME        "
+                + "     , WRITER              "
+                + "     , CATEGORY              "
+                + " FROM POSTS                "
+                + " WHERE CATEGORY = ?         "
+                + "ORDER BY CREATIONTIME DESC "
+                + "LIMIT ?, ?                 ";
+
+   Connection con =  null; //getConnection();
+   PreparedStatement stmt = null;
+   ResultSet rs  = null;
+   try {
+       con = ds.getConnection();
+       stmt = con.prepareStatement(query);
+       stmt.setInt(1, codeNum);
+       stmt.setInt(2, offset);
+       stmt.setInt(3, length);
+       
+       rs = stmt.executeQuery();
+       List<PostVO> posts = new ArrayList<>();
+       while(rs.next()){
+           Integer seq = rs.getInt("seq");
+           String title = rs.getString("title");
+           String content = rs.getString("content");
+           Integer viewcount = rs.getInt("viewcount");
+           String creationtime = rs.getString("creationtime");
+           int category = rs.getInt("category");
+           CodeVO cat = findCategory(con, category);
+
+           UserVO writer = userDao.findBySeq(rs.getInt("writer"));
+           PostVO p = new PostVO(seq, title, content, viewcount, creationtime, writer, cat);
+           posts.add(p);
+       }
+       
+       return posts;
+   } catch (SQLException e) {
+       throw new RuntimeException("fail to load", e);
+   } finally {
+       DBUtil.release(con, stmt, rs);
+   }        
+    }
     
     public List<PostVO> findByRange( int offset, int length ) {
         String query = "SELECT SEQ                 "
@@ -364,6 +410,42 @@ public class PostDao {
             DBUtil.release(con, stmt, rs);
         }
     }
+    
+    /**
+     * 특정 카테고리의 글의 갯수를 반환합니다.
+     * @param codeNum 카테고리의 pk 
+     * @return
+     */
+    public int countPage(int codeNum) {
+        String query = "select count(seq) from posts ";
+        
+        if ( codeNum >= 0 ) {
+            query +=   " where category = ?" ;
+        }
+
+        Connection con =  null; //getConnection();
+        PreparedStatement stmt = null;
+        ResultSet rs  = null;
+        try {
+            con = ds.getConnection();
+            stmt = con.prepareStatement(query);
+            
+            if ( codeNum >= 0 ) {
+                stmt.setInt(1, codeNum);                
+            }
+            
+            rs = stmt.executeQuery();
+            rs.next();
+            return rs.getInt(1);
+            
+        } catch (SQLException e) {
+            throw new RuntimeException("fail to load", e);
+        } finally {
+            DBUtil.release(con, stmt, rs);
+        }
+    }
+
+    
 
 
 }

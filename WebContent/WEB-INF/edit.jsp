@@ -35,7 +35,13 @@ function doEdit(pnum){
                  <td>제목</td>
                  <td><input type="text" name="title" value=${p.title }></td>
                  <td>카테고리</td>
-                 <td><input type="text" name="category" value=${p.category }></td>
+                 <td>
+    		        <select id="ddd" name = "category">
+			            <c:forEach items="${codes }" var="cd">
+			            <option value="${cd.cdDvsId }">${cd.cdNm }</option>
+			            </c:forEach>
+	       	        </select>
+		        </td>
              </tr>
              <tr>
                  <td>내용</td>

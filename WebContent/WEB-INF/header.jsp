@@ -10,4 +10,9 @@
     <span>${loginUser.id}</span>
     <span class="menu"><a href="logout">로그아웃</a></span>
     </c:if>
+    
+    <span><a href="<%=request.getContextPath()%>/list">전체</a></span>
+    <c:forEach items="${codes }" var="cd">
+        <span><a href="<%=request.getContextPath()%>/list?c=${cd.cdDvsId}">${cd.cdNm }</a></span>
+    </c:forEach>
 </div>

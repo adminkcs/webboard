@@ -58,7 +58,7 @@ function go ( pnum ) {
         <td>${k.viewCount }</td>
         <td>${k.time }</td> <!-- k.getCreationTime() -->
         <td>${k.writer.id }</td> <!-- k.getWriter().getId() -->
-        <td>${k.category.cdNm }</td> <!-- k.getWriter().getId() -->
+        <td><a href="<%=request.getContextPath()%>/list?c=${k.category.cdDvsId}">${k.category.cdNm }</a></td> <!-- k.getWriter().getId() -->
     </tr>    
 </c:forEach>
 </table>
