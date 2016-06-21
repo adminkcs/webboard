@@ -60,7 +60,7 @@ public class PostDao {
                      + "     , TITLE               "
                      + "     , CONTENT             "
                      + "     , VIEWCOUNT           "
-                     + "     , CREATIONTIME        "
+                     + "     , DATE_FORMAT(CREATIONTIME, '%Y년%m월%d일%H시%i분%S초') CREATIONTIME"
                      + "     , WRITER              "
                      + "     , CATEGORY              "
                      + "  FROM POSTS               "
@@ -102,7 +102,7 @@ public class PostDao {
                 + "     , TITLE               "
                 + "     , CONTENT             "
                 + "     , VIEWCOUNT           "
-                + "     , CREATIONTIME        "
+                + "     , DATE_FORMAT(CREATIONTIME, '%Y년%m월%d일%H시%i분%S초') CREATIONTIME"
                 + "     , WRITER              "
                 + "     , CATEGORY              "
                 + " FROM POSTS                "
@@ -149,7 +149,7 @@ public class PostDao {
                      + "     , TITLE               "
                      + "     , CONTENT             "
                      + "     , VIEWCOUNT           "
-                     + "     , CREATIONTIME        "
+                     + "     , DATE_FORMAT(CREATIONTIME, '%Y년%m월%d일%H시%i분%S초') CREATIONTIME"
                      + "     , WRITER              "
                      + "     , CATEGORY              "
                      + " FROM POSTS                "
@@ -199,12 +199,13 @@ public class PostDao {
                      + "     , TITLE             "
                      + "     , CONTENT           "
                      + "     , VIEWCOUNT         "
-                     + "     , CREATIONTIME      "
+                     + "     , DATE_FORMAT(CREATIONTIME, '%Y년%m월%d일%H시%i분%S초') CREATIONTIME"
                      + "     , WRITER            "
                      + "     , CATEGORY            "
                      + "  FROM POSTS             "
                      + "  WHERE SEQ = ?          ";
-        
+         
+
         Connection con = null;   //getConnection();
         PreparedStatement stmt = null;
         ResultSet rs  = null;
@@ -260,7 +261,10 @@ public class PostDao {
     }
 
     public List<CodeVO> findAllCategory() {
-        String query = "Select * from codes order by cd_dvs_id";
+        String query = "SELECT CD_DVS_ID "
+        		+ "           ,CD_NM"
+        		+ "       FROM CODES "
+        		+ "      ORDER BY CD_DVS_ID";
         
         Connection con = null;
         PreparedStatement stmt = null;
