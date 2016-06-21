@@ -24,12 +24,13 @@ public class EditAction implements IAction {
 
         String title = req.getParameter("title");
         String content = req.getParameter("content");
+        int seq = WebUtil.Int(req, "pnum", 0);
         int category = WebUtil.Int(req, "category", 1);
 		
         //글쓴이를 변조할수 있기에 세션에서 받아옵니다
-        HttpSession session = req.getSession(); 
-        UserVO loginUser = (UserVO) session.getAttribute("loginUser");
-        postDao.insertPost ( title, content, loginUser.getSeq(), category );
+//        HttpSession session = req.getSession(); 
+//        UserVO loginUser = (UserVO) session.getAttribute("loginUser");
+        postDao.updatePost ( title, content, seq, category );
 
         return "redirect:" + req.getContextPath() + "/list";		
 

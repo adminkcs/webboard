@@ -25,18 +25,18 @@ import github.kcs.board.action.WriteAction;
 /**
  * Servlet implementation class FrontController
  */
-@WebServlet( urlPatterns = {    "/login"    //로그인   (로그인화면으로 이동)
+@WebServlet( urlPatterns = {    "/login"          //로그인   (로그인화면으로 이동)
                               , "/doLogin"    //로그인   (로그인 기능 /로그인 후 리스트로 이동)
-                              , "/logout"    //로그아웃 (로그아웃 기능 /로그아웃 후 리스트로 이동)
-                              , "/list"        //리스트   (리스트 화면으로 이동)
+                              , "/logout"      //로그아웃 (로그아웃 기능 /로그아웃 후 리스트로 이동)
+                              , "/list"         //리스트   (리스트 화면으로 이동)
                               , "/read"        //상세보기 (게시글 상세화면으로 이동) 
-                              , "/write"     //글쓰기   (게시글 글쓰기 화면으로 이동)
-                              , "/doWrite"    //글쓰기     (게시글 저장/저장후 리스트로 이동)    
+                              , "/write"        //글쓰기   (게시글 글쓰기 화면으로 이동)
+                              , "/doWrite"      //글쓰기     (게시글 저장/저장후 리스트로 이동)    
                               , "/edit"        //글수정   (게시글 글수정 화면으로 이동)
-                              , "/delete"    //글삭제   (게시글 글삭제 /삭제 후 리스트로 이동)   
-                              , "/doEdit"    //글수정     (게시글 수정기능 / 수정 후 상세보기 화면으로 이동) 저장 후 상세 화면으로 이동하지 않음
+                              , "/doEdit"       //글수정     (게시글 수정기능 / 수정 후 상세보기 화면으로 이동) 저장 후 상세 화면으로 이동하지 않음
+                              , "/delete"       //글삭제   (게시글 글삭제 /삭제 후 리스트로 이동)   
                               , "/join"        //회원가입 (회원가입화면으로 이동)
-                              , "/doJoin"    //회원가입 (회원가입 가입 후 웰컴화면으로 이동)
+                              , "/doJoin"      //회원가입 (회원가입 가입 후 웰컴화면으로 이동)
                           } )
 public class FrontController extends HttpServlet {
     private static final long serialVersionUID = 1L;
