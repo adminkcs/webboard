@@ -38,7 +38,7 @@ function doDel(){
                  <td>제목</td>
                  <td>${p.title}</td>
                  <td>카테고리</td>
-                 <td>${p.category}</td>
+                 <td>${p.category.cdNm}</td>
               </tr>
              <tr>
                  <td>내용</td>
