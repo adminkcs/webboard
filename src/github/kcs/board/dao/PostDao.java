@@ -60,7 +60,7 @@ public class PostDao {
                      + "     , TITLE               "
                      + "     , CONTENT             "
                      + "     , VIEWCOUNT           "
-                     + "     , CREATIONTIME        "
+                     + "     , DATE_FORMAT(CREATIONTIME, '%Y년%m월%d일%H시%i분%S초') CREATIONTIME"
                      + "     , WRITER              "
                      + "     , CATEGORY              "
                      + "  FROM POSTS               "
@@ -102,7 +102,7 @@ public class PostDao {
                 + "     , TITLE               "
                 + "     , CONTENT             "
                 + "     , VIEWCOUNT           "
-                + "     , CREATIONTIME        "
+                + "     , DATE_FORMAT(CREATIONTIME, '%Y년%m월%d일%H시%i분%S초') CREATIONTIME"
                 + "     , WRITER              "
                 + "     , CATEGORY              "
                 + " FROM POSTS                "
@@ -149,7 +149,7 @@ public class PostDao {
                      + "     , TITLE               "
                      + "     , CONTENT             "
                      + "     , VIEWCOUNT           "
-                     + "     , CREATIONTIME        "
+                     + "     , DATE_FORMAT(CREATIONTIME, '%Y년%m월%d일%H시%i분%S초') CREATIONTIME"
                      + "     , WRITER              "
                      + "     , CATEGORY              "
                      + " FROM POSTS                "
@@ -199,12 +199,13 @@ public class PostDao {
                      + "     , TITLE             "
                      + "     , CONTENT           "
                      + "     , VIEWCOUNT         "
-                     + "     , CREATIONTIME      "
+                     + "     , DATE_FORMAT(CREATIONTIME, '%Y년%m월%d일%H시%i분%S초') CREATIONTIME"
                      + "     , WRITER            "
                      + "     , CATEGORY            "
                      + "  FROM POSTS             "
                      + "  WHERE SEQ = ?          ";
-        
+         
+
         Connection con = null;   //getConnection();
         PreparedStatement stmt = null;
         ResultSet rs  = null;
@@ -260,7 +261,10 @@ public class PostDao {
     }
 
     public List<CodeVO> findAllCategory() {
-        String query = "Select * from codes order by cd_dvs_id";
+        String query = "SELECT CD_DVS_ID "
+        		+ "           ,CD_NM"
+        		+ "       FROM CODES "
+        		+ "      ORDER BY CD_DVS_ID";
         
         Connection con = null;
         PreparedStatement stmt = null;
@@ -312,7 +316,7 @@ public class PostDao {
             DBUtil.release(con, stmt, null);
         }
     }
-    public void updatePost(String title, String content, int seq, String category) {
+    public void updatePost(String title, String content, int seq, int category) {
         String query = "UPDATE POSTS         "
                      + "SET TITLE = ?        "
                      + "  , CONTENT = ?      "
@@ -327,9 +331,10 @@ public class PostDao {
             stmt = con.prepareStatement(query);
             stmt.setString(1, title);
             stmt.setString(2, content);
-            stmt.setInt(3, seq);
-            stmt.setString(4, category);
+            stmt.setInt(3, category);
+            stmt.setInt(4, seq);
             int nInserted = stmt.executeUpdate();
+            System.out.println(title +"//"+content+"//"+category+"//"+ seq);
 //            if ( nInserted < 1) {
 //                throw new SQLException("쓰기 실패. 글 안들어갔습니다.");
 //            }
