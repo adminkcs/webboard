@@ -1,5 +1,6 @@
 package github.kcs.board;
 
+import github.kcs.board.dao.FileDao;
 import github.kcs.board.dao.PostDao;
 import github.kcs.board.dao.UserDao;
 
@@ -9,6 +10,7 @@ public class BoardContext {
     private PostDao postDao ;
     
     private int defaultPageSize ;
+    private FileDao fileDao;
     
     public UserDao getUserDao() {
         return userDao;
@@ -33,5 +35,12 @@ public class BoardContext {
     }
     public void setDefaultPageSize (int pageSize) {
         this.defaultPageSize = pageSize;
+    }
+    
+    public FileDao getFileDao() {
+        return fileDao;
+    }
+    public void setFileDao(FileDao fileDao) {
+        this.fileDao = fileDao;
     }
 }

@@ -48,6 +48,11 @@ function doDel(){
          <c:if test="${ empty p }">
          <h3>글 없음</h3>
          </c:if>
+        <tr>
+            <td>파일</td>
+            <td colspan="3"><a href="<%=request.getContextPath()%>/f/${p.attachedFile.seq}"> ${p.attachedFile.originFileName }</a></td>
+        </tr>
+        
      </table>
         <c:if test="${ p.writer.id eq loginUser.id  }"><li><a href="edit?pnum=${p.seq}">편집하기</a></c:if><!-- 지금 보고 있는 글을 쓴 사람과 로그인한 사람이 같을때에만 -->
         <c:if test="${ p.writer eq loginUser  }"><li>

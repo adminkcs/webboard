@@ -12,6 +12,7 @@ import javax.servlet.http.HttpSession;
 
 import github.kcs.board.BoardContext;
 import github.kcs.board.action.EditAction;
+import github.kcs.board.action.FileDownloadAction;
 import github.kcs.board.action.DeleteAction;
 import github.kcs.board.action.IAction;
 import github.kcs.board.action.JoinAction;
@@ -37,6 +38,7 @@ import github.kcs.board.action.WriteAction;
                               , "/delete"       //글삭제   (게시글 글삭제 /삭제 후 리스트로 이동)   
                               , "/join"        //회원가입 (회원가입화면으로 이동)
                               , "/doJoin"      //회원가입 (회원가입 가입 후 웰컴화면으로 이동)
+                              , "/f/*"    
                           } )
 public class FrontController extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -90,8 +92,8 @@ public class FrontController extends HttpServlet {
             /*
              * 게시판 수정 화면으로 이동합니다.
              */
-            PageEditAction read = new PageEditAction();
-            String nextUrl = read.proccess(btx, request, response);
+            PageEditAction edit = new PageEditAction();
+            String nextUrl = edit.proccess(btx, request, response);
             moveNext (request, response, nextUrl );
             
         }  else if ( uri.equals("/join")) {
@@ -99,6 +101,12 @@ public class FrontController extends HttpServlet {
              * 글쓰기 화면으로 이동
              */
             request.getRequestDispatcher("WEB-INF/join.jsp").forward(request, response);                
+            
+        }  else if ( uri.startsWith("/f/")) {
+            System.out.println("여기는 오나?");
+            // /f/322232
+            String nextUrl = new FileDownloadAction().proccess(btx, request, response);
+            moveNext(request, response, nextUrl);
             
         }
         else {
@@ -187,6 +195,9 @@ public class FrontController extends HttpServlet {
     }
 
     private void moveNext(HttpServletRequest request, HttpServletResponse response, String nextUrl) throws ServletException, IOException {
+        if( nextUrl == null) {
+            return ;
+        }
         if ( nextUrl.startsWith("forward:")){
             request.getRequestDispatcher( nextUrl.substring("forward:".length()).trim() ).forward(request, response);                
         } else if ( nextUrl.startsWith("redirect:")) {

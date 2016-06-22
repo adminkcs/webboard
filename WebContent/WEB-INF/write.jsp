@@ -11,12 +11,12 @@
 <!-- 상단 메뉴 시작  -->
 <jsp:include page="/WEB-INF/header.jsp"></jsp:include>
 <!-- 상단 메뉴 끝 -->
-<form action="doWrite" method="post">
+<form action="doWrite" method="post" enctype="multipart/form-data">
 <input type="hidden" name="seq" value=${loginUser.seq }>
 <table>
     <tr>
         <td>제목</td>
-        <td><input type="text" name = "title"></td>
+        <td><input type="text" name = "title" value="title"></td>
         <td>카테고리</td>
         <td>
         <select id="ddd" name = "category">
@@ -28,7 +28,11 @@
     </tr>
     <tr>
         <td>내용</td>
-        <td colspan="3"><textarea rows="20" cols="100%" name="content"></textarea></td>
+        <td colspan="3"><textarea rows="20" cols="100%" name="content">content</textarea></td>
+    </tr>
+    <tr>
+        <td>파일</td>
+        <td colspan="3"><input type="file" name="f"></td>
     </tr>
     <tr>
         <td colspan="4" align="right"><input type="submit" value="저장"></td>
