@@ -5,12 +5,14 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.sql.DataSource;
 
 import github.kcs.board.vo.CodeVO;
+import github.kcs.board.vo.FileVO;
 import github.kcs.board.vo.PostVO;
 import github.kcs.board.vo.UserVO;
 
@@ -24,12 +26,15 @@ public class PostDao {
     private UserDao userDao; // = new UserDao();
     
     private DataSource ds;
+
+    private FileDao fileDao;
     public PostDao ( UserDao userDao ) {
         this.userDao = userDao;
     }
     
-    public PostDao (DataSource ds, UserDao userDao ) {
+    public PostDao (DataSource ds, UserDao userDao, FileDao fileDao ) {
         this.userDao = userDao;
+        this.fileDao = fileDao;
         this.ds = ds;
     }    
     /*
@@ -226,6 +231,9 @@ public class PostDao {
                 UserVO writer = this.userDao.findBySeq(rs.getInt("writer"));
                 CodeVO category = findCategory (con, categoryFK);
                 p = new PostVO(seq, title, content, viewcount, creationtime, writer, category);
+                
+                FileVO attached = fileDao.findByPost( seq ) ;
+                p.setAttachedFile(attached); 
             }
             return p;
         } catch (SQLException e) {
@@ -290,17 +298,26 @@ public class PostDao {
             DBUtil.release(con, stmt, rs);
         }
     }
-    
-    public void insertPost ( String title, String content, int seq, int category) {
+    public PostVO insertPost ( PostVO newPost) {
+        FileVO f = newPost.getAttachedFile();
+        
+        newPost = insertPost(newPost.getTitle(),newPost.getContent(),newPost.getWriter().getSeq(),newPost.getCategory().getCdDvsId());
+        
+        fileDao.insertFile ( f, newPost.getSeq() );
+        return newPost;
+    }
+    public PostVO insertPost ( String title, String content, int seq, int category) {
         String query = "INSERT INTO POSTS (TITLE, CONTENT, WRITER, CATEGORY) "
                      + "VALUES (?,?,?,?)                             "; // inser, update, delete
         
         Connection con = null;   //getConnection();
         PreparedStatement stmt = null;
-        PostVO p = null;
+        ResultSet rs = null;
+        
+        PostVO p = new PostVO(null, title, content, 0, null, null, null);
         try {
             con = ds.getConnection();
-            stmt = con.prepareStatement(query);
+            stmt = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS );
             stmt.setString(1, title);
             stmt.setString(2, content);
             stmt.setInt(3, seq);
@@ -309,7 +326,14 @@ public class PostDao {
 //            if ( nInserted < 1) {
 //                throw new SQLException("쓰기 실패. 글 안들어갔습니다.");
 //            }
-            
+            /*
+             * 이제 여기서 DB가 생성한 PK값을 얻어내서 설정해줘야 합니다.
+             */
+            rs = stmt.getGeneratedKeys();
+            rs.next();
+            Integer pk = rs.getInt(1); 
+            p.setSeq(pk);
+            return p;
         } catch (SQLException e) {
             throw new RuntimeException("fail to load", e);
         } finally {

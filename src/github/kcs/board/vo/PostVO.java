@@ -37,6 +37,8 @@ public class PostVO {
 	private UserVO writer;
 	private CodeVO category;
 	
+	private FileVO attachedFile;
+	
 	public PostVO(Integer seq, String title, String content, Integer viewCount, String creationTime, UserVO writer, CodeVO category) {
 		this.seq = seq;
 		this.title = title;
@@ -90,7 +92,14 @@ public class PostVO {
 	public void setCategory(CodeVO category) {
 		this.category = category;
 	}
-	@Override
+	
+	public FileVO getAttachedFile() {
+        return attachedFile;
+    }
+    public void setAttachedFile(FileVO attachedFile) {
+        this.attachedFile = attachedFile;
+    }
+    @Override
 	public String toString() {
 		return "PostVO [seq=" + seq + ", title=" + title + ", viewCount=" + viewCount + ", creationTime=" + creationTime
 				+ ", content=" + content + ", writer=" + writer + ", category=" + category + "]";
