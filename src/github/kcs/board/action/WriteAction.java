@@ -79,7 +79,7 @@ public class WriteAction implements IAction {
                     String fname = fis.getFieldName();
                     System.out.println("form field : " + fname);
                     InputStream in = fis.openStream();
-                    String data = Streams.asString(in); // property에 따른 데이터를 실제로 읽어들입니다. 
+                    String data = Streams.asString(in, "UTF-8"); // property에 따른 데이터를 실제로 읽어들입니다. 
                     if ( "seq".equals(fname)) {
                         // seq = Integer.parseInt(fis)
                     } else if ( "title".equals(fname) ) {
