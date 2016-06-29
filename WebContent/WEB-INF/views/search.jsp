@@ -39,7 +39,7 @@ function go ( pnum ) {
 <form action="<%=request.getContextPath() %>/read" method="post" id="frm">
 <input type="hidden" name="pnum" id="pnum" value="1005">
 </form>
-<h3>${searchword }</h3>
+<h3>${seachWord }</h3>
 <!-- <b> ${curPage} of ${totalPage } page</b> -->
 <table border="1">
     <tr>

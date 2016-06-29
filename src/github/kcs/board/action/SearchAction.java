@@ -20,14 +20,14 @@ public class SearchAction implements IAction {
     public String proccess(BoardContext btx, HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
         PostDao dao = (PostDao) req.getServletContext().getAttribute("postDao");
-        String sw   = req.getParameter("sw");
+        String sw   = req.getParameter("sw"); // 감자 고구마  => 감자, 고구마]
         int tnum  = WebUtil.Int(req, "type", 1);
         
         String [] columns = chooseColumns ( tnum );
         System.out.println("type number: " + tnum  +  Arrays.toString(columns));
         
         List<PostVO> posts = dao.findBySearch(columns, sw);
-        
+        req.setAttribute("seachWord", sw);
         req.setAttribute("allPosts", posts );
         return "forward:/WEB-INF/views/search.jsp";
     }

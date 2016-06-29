@@ -485,8 +485,8 @@ public class PostDao {
                 + "  FROM POSTS               "
                 + "  {where} "
                 + " ORDER BY CREATIONTIME DESC";
-       
-       String query = baseQuery.replace("{where}", whereQuery ( columns ));
+       String [] words = parseWords ( sw );
+       String query = baseQuery.replace("{where}", whereMatchQuery( columns, words ));
        
        System.out.println("Q: " + query );
        
@@ -496,9 +496,6 @@ public class PostDao {
        try {
            con = ds.getConnection();
            stmt = con.prepareStatement(query);
-           for(int i=0; i<columns.length; i++){
-               stmt.setString(i+1, "%" + sw + "%");               
-           }
            
            rs = stmt.executeQuery();
            List<PostVO> posts = new ArrayList<>();
@@ -524,6 +521,11 @@ public class PostDao {
        }
     }
 
+    private String[] parseWords(String sw) {
+        String word[] = sw.trim().split("\\s+"); 
+        return word;
+    }
+
     private String whereQuery ( String [] columns ) {
         String where = "where ";
         for(int i=0; i< columns.length; i++){
@@ -533,6 +535,28 @@ public class PostDao {
                 where += "OR "+ columns[i] + " LIKE ? ";                
             }
         }
+        return where;
+    }
+    
+    private String whereMatchQuery ( String [] columns, String[] words ) {
+        // words = new String[]{"감자", 고구마}
+        // where match(title, content) against('감자* 고구마*' in boolean mode)
+        String where = "where match({c}) against('{s}' in boolean mode)";
+        
+        String cpart = "";
+        for(int i=0; i < columns.length; i++){
+            cpart += columns[i]+",";
+        }
+        //title,content,
+        int end = cpart.lastIndexOf(',');
+        cpart = cpart.substring(0, end);
+        where = where.replace("{c}", cpart);
+
+        String dpart = "";
+        for(int i=0; i < words.length; i++){
+            dpart += words[i]+"*";
+        }
+        where = where.replace("{s}", dpart);
         return where;
     }
 
