@@ -7,7 +7,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>게시판 - ${category }</title>
+<title>검색 - ${category }</title>
 
 <style type="text/css">
 .menu {
@@ -39,8 +39,8 @@ function go ( pnum ) {
 <form action="<%=request.getContextPath() %>/read" method="post" id="frm">
 <input type="hidden" name="pnum" id="pnum" value="1005">
 </form>
-<h3>${prePage }게시판 리스트 출력[2]</h3>
-<b> ${curPage} of ${totalPage } page</b>
+<h3>${searchword }</h3>
+<!-- <b> ${curPage} of ${totalPage } page</b> -->
 <table border="1">
     <tr>
         <td>글번호</td>
@@ -62,6 +62,7 @@ function go ( pnum ) {
     </tr>    
 </c:forEach>
 </table>
+<!-- 
 <div id="page-area">
 <c:forEach var="l" items="${pageNums }">
     <span class="pnum">
@@ -70,6 +71,7 @@ function go ( pnum ) {
     </span> 
 </c:forEach>
 </div>
+ -->
 <jsp:include page="/WEB-INF/views/form-search.jsp"></jsp:include>
 <%-- 기존 리스트 뽑아내는 것
 <%

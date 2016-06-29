@@ -474,6 +474,68 @@ public class PostDao {
         }
     }
 
+    public List<PostVO> findBySearch(String [] columns, String sw) {
+        String baseQuery = "SELECT SEQ            "
+                + "     , TITLE               "
+                + "     , CONTENT             "
+                + "     , VIEWCOUNT           "
+                + "     , DATE_FORMAT(CREATIONTIME, '%Y년%m월%d일%H시%i분%S초') CREATIONTIME"
+                + "     , WRITER              "
+                + "     , CATEGORY              "
+                + "  FROM POSTS               "
+                + "  {where} "
+                + " ORDER BY CREATIONTIME DESC";
+       
+       String query = baseQuery.replace("{where}", whereQuery ( columns ));
+       
+       System.out.println("Q: " + query );
+       
+       Connection con =  null; //getConnection();
+       PreparedStatement stmt = null;
+       ResultSet rs  = null;
+       try {
+           con = ds.getConnection();
+           stmt = con.prepareStatement(query);
+           for(int i=0; i<columns.length; i++){
+               stmt.setString(i+1, "%" + sw + "%");               
+           }
+           
+           rs = stmt.executeQuery();
+           List<PostVO> posts = new ArrayList<>();
+           while(rs.next()){
+               Integer seq = rs.getInt("seq");
+               String title = rs.getString("title");
+               String content = rs.getString("content");
+               Integer viewcount = rs.getInt("viewcount");
+               String creationtime = rs.getString("creationtime");
+               int category = rs.getInt("category");
+               CodeVO cat = findCategory(con, category);
+               
+               UserVO writer = userDao.findBySeq(rs.getInt("writer"));
+               PostVO p = new PostVO(seq, title, content, viewcount, creationtime, writer, cat);
+               posts.add(p);
+           }
+           
+           return posts;
+       } catch (SQLException e) {
+           throw new RuntimeException("fail to load", e);
+       } finally {
+           DBUtil.release(con, stmt, rs);
+       }
+    }
+
+    private String whereQuery ( String [] columns ) {
+        String where = "where ";
+        for(int i=0; i< columns.length; i++){
+            if(i==0){
+                where += columns[i] + " LIKE ? ";                
+            }else{
+                where += "OR "+ columns[i] + " LIKE ? ";                
+            }
+        }
+        return where;
+    }
+
     
 
 

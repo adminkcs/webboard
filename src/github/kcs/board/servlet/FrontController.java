@@ -21,6 +21,7 @@ import github.kcs.board.action.PageEditAction;
 import github.kcs.board.action.PageListAction;
 import github.kcs.board.action.PageReadAction;
 import github.kcs.board.action.PageWriteAction;
+import github.kcs.board.action.SearchAction;
 import github.kcs.board.action.WriteAction;
 
 /**
@@ -37,6 +38,7 @@ import github.kcs.board.action.WriteAction;
                               , "/doEdit"       //글수정     (게시글 수정기능 / 수정 후 상세보기 화면으로 이동) 저장 후 상세 화면으로 이동하지 않음
                               , "/delete"       //글삭제   (게시글 글삭제 /삭제 후 리스트로 이동)   
                               , "/join"        //회원가입 (회원가입화면으로 이동)
+                              , "/search"        //회원가입 (회원가입화면으로 이동)
                               , "/doJoin"      //회원가입 (회원가입 가입 후 웰컴화면으로 이동)
                               , "/f/*"    
                           } )
@@ -69,6 +71,13 @@ public class FrontController extends HttpServlet {
              */
             IAction listAction = new PageListAction();
             String nextUrl = listAction.proccess(btx, request, response);
+            moveNext(request, response, nextUrl);
+        } else if ( uri.equals("/search")) {
+            /*
+             * 게시판 리스트를 보여줍니다.
+             */
+            IAction searchAction = new SearchAction();
+            String nextUrl = searchAction.proccess(btx, request, response);
             moveNext(request, response, nextUrl);
         } else if ( uri.equals("/write")) {
             /*
