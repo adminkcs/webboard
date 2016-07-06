@@ -37,8 +37,22 @@ public class PostVO {
 	private UserVO writer;
 	private CodeVO category;
 	
-	private FileVO attachedFile;
+	private Integer groupNum;
+	private Integer parentNum; 
+	private Integer orderNum;
+	private Integer indentation;
 	
+	private FileVO attachedFile;
+	/**
+	 * FIXME 나중에 없애야 함. 
+	 * @param seq
+	 * @param title
+	 * @param content
+	 * @param viewCount
+	 * @param creationTime
+	 * @param writer
+	 * @param category
+	 */
 	public PostVO(Integer seq, String title, String content, Integer viewCount, String creationTime, UserVO writer, CodeVO category) {
 		this.seq = seq;
 		this.title = title;
@@ -47,8 +61,34 @@ public class PostVO {
 		this.creationTime = creationTime;
 		this.writer = writer;
 		this.category = category;
+		
+		this.groupNum = seq;
+		this.parentNum = seq;
+		this.orderNum = 0;
+		this.indentation = 0;
 	}
-	public Integer getSeq() {
+	
+	public PostVO(Integer seq, 
+	        String title, Integer viewCount, String creationTime, String content, UserVO writer,
+            CodeVO category, FileVO attachedFile, 
+            Integer groupNum, Integer parentNum, Integer orderNum, Integer indentation) {
+        super();
+        this.seq = seq;
+        this.title = title;
+        this.viewCount = viewCount;
+        this.creationTime = creationTime;
+        this.content = content;
+        this.writer = writer;
+        this.category = category;
+        this.groupNum = groupNum;
+        this.parentNum = parentNum;
+        this.orderNum = orderNum;
+        this.indentation = indentation;
+        this.attachedFile = attachedFile;
+    }
+
+
+    public Integer getSeq() {
 		return seq;
 	}
 	public void setSeq(Integer seq) {
@@ -99,6 +139,40 @@ public class PostVO {
     public void setAttachedFile(FileVO attachedFile) {
         this.attachedFile = attachedFile;
     }
+    
+    
+    public Integer getGroupNum() {
+        return groupNum;
+    }
+
+    public void setGroupNum(Integer groupNum) {
+        this.groupNum = groupNum;
+    }
+
+    public Integer getParentNum() {
+        return parentNum;
+    }
+
+    public void setParentNum(Integer parentNum) {
+        this.parentNum = parentNum;
+    }
+
+    public Integer getOrderNum() {
+        return orderNum;
+    }
+
+    public void setOrderNum(Integer orderNum) {
+        this.orderNum = orderNum;
+    }
+
+    public Integer getIndentation() {
+        return indentation;
+    }
+
+    public void setIndentation(Integer indentation) {
+        this.indentation = indentation;
+    }
+
     @Override
 	public String toString() {
 		return "PostVO [seq=" + seq + ", title=" + title + ", viewCount=" + viewCount + ", creationTime=" + creationTime
