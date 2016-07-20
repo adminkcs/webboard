@@ -20,7 +20,9 @@ import github.kcs.board.action.LoginAction;
 import github.kcs.board.action.PageEditAction;
 import github.kcs.board.action.PageListAction;
 import github.kcs.board.action.PageReadAction;
+import github.kcs.board.action.PageReplyAction;
 import github.kcs.board.action.PageWriteAction;
+import github.kcs.board.action.ReplyAction;
 import github.kcs.board.action.SearchAction;
 import github.kcs.board.action.WriteAction;
 
@@ -40,6 +42,8 @@ import github.kcs.board.action.WriteAction;
                               , "/join"        //회원가입 (회원가입화면으로 이동)
                               , "/search"        //회원가입 (회원가입화면으로 이동)
                               , "/doJoin"      //회원가입 (회원가입 가입 후 웰컴화면으로 이동)
+                              , "/reply"      
+                              , "/doReply"      
                               , "/f/*"    
                           } )
 public class FrontController extends HttpServlet {
@@ -86,7 +90,7 @@ public class FrontController extends HttpServlet {
             IAction writeAction = new PageWriteAction();
             String nextUrl = writeAction.proccess(btx, request, response);
             moveNext(request, response, nextUrl);
-        } else if(uri.equals("/login")){
+        }  else if(uri.equals("/login")){
             /*
              * 로그인 화면으로 이동
              * FIXME 만일 현재 사용자가 이미 로그인을 했다면 아래와 같이 로그인 페이지로 포워등을 하면 안됩니다. 
@@ -155,7 +159,21 @@ public class FrontController extends HttpServlet {
             String nextUrl = action.proccess(btx, request, response);
             moveNext(request, response, nextUrl);
             
-        }else if(uri.equals("/doLogin")){
+        }else if ( "/reply".equals(uri) ) {
+            /*
+             * 게시글 답글쓰기로 이동
+             */
+            IAction action = new PageReplyAction();
+            String nextUrl = action.proccess(btx, request, response);
+            moveNext(request, response, nextUrl);
+            
+            
+        } else if ( uri.equals("/doReply")) {
+          
+            IAction writeAction = new ReplyAction();
+            String nextUrl = writeAction.proccess(btx, request, response);
+            moveNext(request, response, nextUrl);
+        } else if(uri.equals("/doLogin")){
             /*
              * 로그인을 합니다.
              * 톰캣을 클러스터링으로 구성할때가 있습니다.

@@ -68,8 +68,12 @@ public class PostDao {
                      + "     , DATE_FORMAT(CREATIONTIME, '%Y년%m월%d일%H시%i분%S초') CREATIONTIME"
                      + "     , WRITER              "
                      + "     , CATEGORY              "
+                     + "     , GNUM                "
+                     + "     , PARENT              "
+                     + "     , ODRNUM              "
+                     + "     , INDENT              "
                      + "  FROM POSTS               "
-                     + " ORDER BY CREATIONTIME DESC";
+                     + " ORDER BY GNUM DESC, ODRNUM ASC ";
         
         Connection con =  null; //getConnection();
         PreparedStatement stmt = null;
@@ -110,9 +114,13 @@ public class PostDao {
                 + "     , DATE_FORMAT(CREATIONTIME, '%Y년%m월%d일%H시%i분%S초') CREATIONTIME"
                 + "     , WRITER              "
                 + "     , CATEGORY              "
+                + "     , GNUM                "
+                + "     , PARENT              "
+                + "     , ODRNUM              "
+                + "     , INDENT              "
                 + " FROM POSTS                "
                 + " WHERE CATEGORY = ?         "
-                + "ORDER BY CREATIONTIME DESC "
+                + "ORDER BY GNUM DESC, ODRNUM ASC "
                 + "LIMIT ?, ?                 ";
 
    Connection con =  null; //getConnection();
@@ -138,6 +146,10 @@ public class PostDao {
 
            UserVO writer = userDao.findBySeq(rs.getInt("writer"));
            PostVO p = new PostVO(seq, title, content, viewcount, creationtime, writer, cat);
+           p.setGroupNum( rs.getInt("gnum"));
+           p.setParentNum(rs.getInt("parent"));
+           p.setOrderNum( rs.getInt("odrnum"));
+           p.setIndentation( rs.getInt("indent"));
            posts.add(p);
        }
        
@@ -157,9 +169,13 @@ public class PostDao {
                      + "     , DATE_FORMAT(CREATIONTIME, '%Y년%m월%d일%H시%i분%S초') CREATIONTIME"
                      + "     , WRITER              "
                      + "     , CATEGORY              "
+                     + "     , GNUM                "
+                     + "     , PARENT              "
+                     + "     , ODRNUM              "
+                     + "     , INDENT              "
                      + " FROM POSTS                "
-                     + "ORDER BY CREATIONTIME DESC "
-                     + "LIMIT ?, ?                 ";
+                     + " ORDER BY GNUM DESC, ODRNUM ASC  "
+                     + " LIMIT ?, ?                 ";
 
         Connection con =  null; //getConnection();
         PreparedStatement stmt = null;
@@ -183,6 +199,10 @@ public class PostDao {
 
                 UserVO writer = userDao.findBySeq(rs.getInt("writer"));
                 PostVO p = new PostVO(seq, title, content, viewcount, creationtime, writer, cat);
+                p.setGroupNum( rs.getInt("gnum"));
+                p.setParentNum(rs.getInt("parent"));
+                p.setOrderNum( rs.getInt("odrnum"));
+                p.setIndentation( rs.getInt("indent"));
                 posts.add(p);
             }
             
@@ -207,6 +227,10 @@ public class PostDao {
                      + "     , DATE_FORMAT(CREATIONTIME, '%Y년%m월%d일%H시%i분%S초') CREATIONTIME"
                      + "     , WRITER            "
                      + "     , CATEGORY            "
+                     + "     , GNUM                "
+                     + "     , PARENT              "
+                     + "     , ODRNUM              "
+                     + "     , INDENT              "
                      + "  FROM POSTS             "
                      + "  WHERE SEQ = ?          ";
          
@@ -231,6 +255,10 @@ public class PostDao {
                 UserVO writer = this.userDao.findBySeq(rs.getInt("writer"));
                 CodeVO category = findCategory (con, categoryFK);
                 p = new PostVO(seq, title, content, viewcount, creationtime, writer, category);
+                p.setGroupNum( rs.getInt("gnum"));
+                p.setParentNum(rs.getInt("parent"));
+                p.setOrderNum( rs.getInt("odrnum"));
+                p.setIndentation( rs.getInt("indent"));
                 
                 FileVO attached = fileDao.findByPost( seq ) ;
                 p.setAttachedFile(attached); 
@@ -299,19 +327,76 @@ public class PostDao {
         }
     }
     public PostVO insertPost ( PostVO newPost) {
+        
+//        newPost = insertPost(newPost.getTitle(),newPost.getContent(),newPost.getWriter().getSeq(),newPost.getCategory().getCdDvsId());
+        newPost = insertPostInternal(newPost);
         FileVO f = newPost.getAttachedFile();
-        
-        newPost = insertPost(newPost.getTitle(),newPost.getContent(),newPost.getWriter().getSeq(),newPost.getCategory().getCdDvsId());
-        
         fileDao.insertFile ( f, newPost.getSeq() );
         return newPost;
     }
-    public PostVO insertPost ( String title, String content, int seq, int category) {
-        String query = "INSERT INTO POSTS (TITLE, CONTENT, WRITER, CATEGORY) "
-                     + "VALUES (?,?,?,?)                             "; // inser, update, delete
+    public PostVO insertPostInternal (  PostVO post ) {
+        String query = "     INSERT INTO POSTS (TITLE, CONTENT, WRITER, CATEGORY, gnum, parent, odrnum, indent) "
+                     +"VALUES (?, ?, ?, ?, ?, ?, ?, ?)                              "; // inser, update, delete
         
+        String updateQuery = "update posts set gnum = ?, parent = ? where seq = ? ";
         Connection con = null;   //getConnection();
         PreparedStatement stmt = null;
+        PreparedStatement stmt2 = null;
+        ResultSet rs = null;
+        
+//        PostVO p = new PostVO(null, title, content, 0, null, null, null);
+        try {
+            con = ds.getConnection();
+            stmt = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS );
+            stmt.setString(1, post.getTitle());
+            stmt.setString(2, post.getContent());
+            stmt.setInt(3, post.getWriter().getSeq());
+            stmt.setInt(4, post.getCategory().getCdDvsId());
+            
+            Integer gnum = post.getGroupNum() ;
+            Integer parent = post.getParentNum();
+            
+            stmt.setInt(5, gnum == null ? 0 : gnum );
+            stmt.setInt(6, parent == null ? 0 : parent);
+            stmt.setInt(7, post.getOrderNum());
+            stmt.setInt(8, post.getIndentation());
+            stmt.executeUpdate();
+
+            rs = stmt.getGeneratedKeys();
+            rs.next();
+            Integer pk = rs.getInt(1); 
+            post.setSeq(pk);
+
+            if ( gnum == null ) {
+                /*
+                 * 이제 여기서 DB가 생성한 PK값을 얻어내서 설정해줘야 합니다.
+                 */
+                
+                stmt2 = con.prepareStatement(updateQuery);
+                stmt2.setInt(1, pk);
+                stmt2.setInt(2, pk);
+                stmt2.setInt(3, pk);
+                stmt2.executeUpdate();
+                
+                
+            }
+            return post;
+        } catch (SQLException e) {
+            throw new RuntimeException("fail to load", e);
+        } finally {
+            DBUtil.release(con, stmt, null);
+            DBUtil.release(null, stmt2, null);
+        }
+    }
+    /*
+    public PostVO insertPost ( String title, String content, int seq, int category) {
+        String query = "     INSERT INTO POSTS (TITLE, CONTENT, WRITER, CATEGORY, gnum, parent, odrnum, indent) "
+                     +"VALUES (?, ?, ?, ?, 0, 0, 0, 0)                              "; // inser, update, delete
+        
+        String updateQuery = "update posts set gnum = ?, parent = ? where seq = ? ";
+        Connection con = null;   //getConnection();
+        PreparedStatement stmt = null;
+        PreparedStatement stmt2 = null;
         ResultSet rs = null;
         
         PostVO p = new PostVO(null, title, content, 0, null, null, null);
@@ -323,23 +408,27 @@ public class PostDao {
             stmt.setInt(3, seq);
             stmt.setInt(4, category);
             stmt.executeUpdate();
-//            if ( nInserted < 1) {
-//                throw new SQLException("쓰기 실패. 글 안들어갔습니다.");
-//            }
-            /*
-             * 이제 여기서 DB가 생성한 PK값을 얻어내서 설정해줘야 합니다.
-             */
             rs = stmt.getGeneratedKeys();
             rs.next();
             Integer pk = rs.getInt(1); 
             p.setSeq(pk);
+            
+            System.out.println("PK : " + pk);
+            stmt2 = con.prepareStatement(updateQuery);
+            stmt2.setInt(1, pk);
+            stmt2.setInt(2, pk);
+            stmt2.setInt(3, pk);
+            stmt2.executeUpdate();
+            
             return p;
         } catch (SQLException e) {
             throw new RuntimeException("fail to load", e);
         } finally {
             DBUtil.release(con, stmt, null);
+            DBUtil.release(null, stmt2, null);
         }
     }
+    */
     public void updatePost(String title, String content, int seq, int category) {
         String query = "UPDATE POSTS         "
                      + "SET TITLE = ?        "
@@ -560,7 +649,43 @@ public class PostDao {
         return where;
     }
 
-    
+    public void reply ( Integer parentSeq, PostVO reply ) {
+        PostVO parent = findBySeq(parentSeq);
+        
+        reply.setGroupNum(parent.getGroupNum() );
+        reply.setParentNum(parent.getSeq());
+        reply.setOrderNum(parent.getOrderNum() + 1);
+        reply.setIndentation(parent.getIndentation() + 1);
+        reply.setCategory(parent.getCategory());
+        
+        /*
+         *  order number 를 재배치 해줍니다.
+         *  
+         *  현재 부모글의 order number보다 큰 애들의 order 값을 1씩 증가시켜줍니다.
+         *  update 
+         */
+        
+        String orderQuery = "update posts set odrnum = odrnum + 1 where gnum = ? and odrnum > ?";
+        
+        Connection con = null;
+        PreparedStatement stmt = null;
+        
+        try {
+            con =ds.getConnection();
+            stmt = con.prepareStatement(orderQuery);
+            stmt.setInt(1, parent.getGroupNum());
+            stmt.setInt(2, parent.getOrderNum());
+            stmt.executeUpdate();
+            
+            insertPost(reply);
+        } catch (SQLException  e ) {
+            throw new RuntimeException("fail to reply", e);
+        } finally {
+            DBUtil.release(con, stmt, null);
+        }
+        
+        
+    }
 
 
 }

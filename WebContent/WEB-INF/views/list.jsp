@@ -21,6 +21,15 @@
     padding : 4px;
     background-color: yellow;
 }
+.padding1 {
+    padding-left:14px;
+}
+.padding2 {
+    padding-left:28px;
+}
+.padding3 {
+    padding-left:42px;
+}
 </style>
 
 <script type="text/javascript">
@@ -54,7 +63,7 @@ function go ( pnum ) {
     <tr>
         <td>${k.seq}</td>
         <!-- http://localhost:8080/board/read?pid=1005 -->
-        <td><a href="#" onclick="go(${k.seq}); return false;">${k.title }</a></td>
+        <td><span class="padding${ k.indentation }"></span><a href="#" onclick="go(${k.seq}); return false;">${k.title }</a></td>
         <td>${k.viewCount }</td>
         <td>${k.time }</td> <!-- k.getCreationTime() -->
         <td>${k.writer.id }</td> <!-- k.getWriter().getId() -->

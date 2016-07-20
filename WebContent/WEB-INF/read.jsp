@@ -29,6 +29,11 @@ function doDel(){
     document.board.action = "delete";
     document.board.submit();
 }
+function reply(){
+    document.board.method = "POST";
+    document.board.action = "reply";
+    document.board.submit();
+}
 </script>         
  <form name="board">
      <input type="hidden" name="pnum" value="${p.seq }">
@@ -58,6 +63,9 @@ function doDel(){
         <c:if test="${ p.writer eq loginUser  }"><li>
         <a href="JavaScript:doDel()">삭제하기</a>
         </c:if><!-- 지금 보고 있는 글을 쓴 사람과 로그인한 사람이 같을때에만 -->
+        <c:if test="${ not empty loginUser}">
+        <li><a href="Javascript:reply()">답글쓰기</a>
+        </c:if>
         <li><a href="${ctxpath}/list">목록으로</a>
 </form>
 </body>
