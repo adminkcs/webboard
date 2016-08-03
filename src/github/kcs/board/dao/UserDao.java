@@ -9,20 +9,29 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+
 import github.kcs.board.vo.PostVO;
 import github.kcs.board.vo.UserVO;
 
-public class UserDao {
+public class UserDao implements IUserDao {
 
     private DataSource ds;
+    private SqlSessionFactory factory;
     
     public UserDao ( DataSource ds) {
         this.ds = ds;
+    }
+    public UserDao(DataSource ds, SqlSessionFactory fac) {
+        this.ds = ds;
+        this.factory = fac;
     }
     /**
      * 모든 게시판 사용자들을 불러옵니다.
      * @return
      */
+    @Override
     public List<UserVO> findAll() {
         return null;
     }
@@ -33,47 +42,35 @@ public class UserDao {
      * @param password
      * @return
      */
+    @Override
     public UserVO login ( String id, String password) {
-        
-        String query = "SELECT SEQ           "
-                     + "     , ID            "
-                     + "     , PASSWORD      "
-                     + "     , JOINDATE      "
-                     + "  FROM USERS         "
-                     + " WHERE ID = ?        "
-                     + "   AND PASSWORD = ?  ";
-        
-        Connection con = null ; 
-        PreparedStatement stmt = null;
-        ResultSet rs  = null;
-        UserVO p = null;
+        SqlSession session = factory.openSession();
         try {
-            con = ds.getConnection();
-            stmt = con.prepareStatement(query);
-            stmt.setString(1, id);
-            stmt.setString(2, password);
-            rs = stmt.executeQuery();
-            if(rs.next()){
-//                seq = rs.getInt("seq");
-                Integer seq = rs.getInt("seq");
-                String joindate = rs.getString("joindate");
-
-                p = new UserVO(seq, id, password, joindate );        
-            }        
-            return p;
-        } catch (SQLException e) {
-            throw new RuntimeException("fail to load", e);
+            IUserDao userDao = session.getMapper(IUserDao.class);
+            UserVO user = userDao.login(id, password);
+            return user;
         } finally {
-            DBUtil.release(con, stmt, rs);
+            session.close();
         }
     }
+    
     /**
      * 특정 사용자를 찾습니다.
      * @param userSeq
      * @return
      */
+    @Override
     public UserVO findBySeq ( Integer userSeq) {
-        String query = "SELECT SEQ         "
+        SqlSession session = factory.openSession();
+        try {
+            IUserDao userDao = session.getMapper(IUserDao.class);
+            UserVO user = userDao.findBySeq(userSeq);
+            return user;
+        } finally {
+            session.close();
+        }
+        
+       /* String query = "SELECT SEQ         "
                      + "     , ID          "
                      + "     , PASSWORD    "
                      + "     , JOINDATE    "
@@ -105,10 +102,20 @@ public class UserDao {
             throw new RuntimeException("fail to load", e);
         } finally {
             DBUtil.release(con, stmt, rs);
-        }
+        }*/
     }
     
+    @Override
     public void insertUser ( String name, String password) {
+        SqlSession session = factory.openSession();
+        try {
+            IUserDao userDao = session.getMapper(IUserDao.class);
+            userDao.insertUser(name, password);
+            session.commit();
+        } finally {
+            session.close();
+        }
+        /*
         String query = "insert into users (id,password) values(?,?) "; // inser, update, delete
         
         Connection con = null;   //getConnection();
@@ -126,5 +133,6 @@ public class UserDao {
         } finally {
             DBUtil.release(con, stmt, null);
         }
+        */
     }
 }

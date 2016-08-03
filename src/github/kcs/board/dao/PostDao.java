@@ -21,18 +21,18 @@ import github.kcs.board.vo.UserVO;
  * @author wise-itech
  *
  */
-public class PostDao {
+public class PostDao implements IPostDao {
     
-    private UserDao userDao; // = new UserDao();
+    private IUserDao userDao; // = new UserDao();
     
     private DataSource ds;
 
     private FileDao fileDao;
-    public PostDao ( UserDao userDao ) {
+    public PostDao ( IUserDao userDao ) {
         this.userDao = userDao;
     }
     
-    public PostDao (DataSource ds, UserDao userDao, FileDao fileDao ) {
+    public PostDao (DataSource ds, IUserDao userDao, FileDao fileDao ) {
         this.userDao = userDao;
         this.fileDao = fileDao;
         this.ds = ds;
@@ -60,6 +60,7 @@ public class PostDao {
      * 
      * @return
      */
+    @Override
     public List<PostVO> findAll() {
         String query = "SELECT SEQ                 "
                      + "     , TITLE               "
@@ -106,6 +107,7 @@ public class PostDao {
         
 //        return samples;
     }
+    @Override
     public List<PostVO> findByRange(int offset, int length, int codeNum) {
         String query = "SELECT SEQ                 "
                 + "     , TITLE               "
@@ -161,6 +163,7 @@ public class PostDao {
    }        
     }
     
+    @Override
     public List<PostVO> findByRange( int offset, int length ) {
         String query = "SELECT SEQ                 "
                      + "     , TITLE               "
@@ -218,6 +221,7 @@ public class PostDao {
      * @param seq
      * @return
      */
+    @Override
     public PostVO findBySeq ( Integer seq) {
         // select * from posts where seq = 1005
         String query = "SELECT SEQ               "
@@ -296,6 +300,7 @@ public class PostDao {
         }
     }
 
+    @Override
     public List<CodeVO> findAllCategory() {
         String query = "SELECT CD_DVS_ID "
         		+ "           ,CD_NM"
@@ -326,6 +331,7 @@ public class PostDao {
             DBUtil.release(con, stmt, rs);
         }
     }
+    @Override
     public PostVO insertPost ( PostVO newPost) {
         
 //        newPost = insertPost(newPost.getTitle(),newPost.getContent(),newPost.getWriter().getSeq(),newPost.getCategory().getCdDvsId());
@@ -334,6 +340,7 @@ public class PostDao {
         fileDao.insertFile ( f, newPost.getSeq() );
         return newPost;
     }
+    @Override
     public PostVO insertPostInternal (  PostVO post ) {
         String query = "     INSERT INTO POSTS (TITLE, CONTENT, WRITER, CATEGORY, gnum, parent, odrnum, indent) "
                      +"VALUES (?, ?, ?, ?, ?, ?, ?, ?)                              "; // inser, update, delete
@@ -429,6 +436,7 @@ public class PostDao {
         }
     }
     */
+    @Override
     public void updatePost(String title, String content, int seq, int category) {
         String query = "UPDATE POSTS         "
                      + "SET TITLE = ?        "
@@ -458,6 +466,7 @@ public class PostDao {
             DBUtil.release(con, stmt, null);
         }        
     }
+    @Override
     public void deletePost(int seq) {
         String query = "DELETE FROM POSTS "
                      + "WHERE SEQ = ?     "; // inser, update, delete
@@ -482,10 +491,12 @@ public class PostDao {
         }        
     }
 
+    @Override
     public List<PostVO> findByCategory ( String category, int offset, int lenth ) {
         return null;
     }
 
+    @Override
     public void updateViewCount(Integer postSeq, int viewCount) {
         String query = "UPDATE POSTS         "
                      + "   SET VIEWCOUNT = ? "
@@ -509,6 +520,7 @@ public class PostDao {
         
     }
 
+    @Override
     public int countPage() {
         String query = "select count(seq) from posts";
 
@@ -534,6 +546,7 @@ public class PostDao {
      * @param codeNum 카테고리의 pk 
      * @return
      */
+    @Override
     public int countPage(int codeNum) {
         String query = "select count(seq) from posts ";
         
@@ -563,6 +576,7 @@ public class PostDao {
         }
     }
 
+    @Override
     public List<PostVO> findBySearch(String [] columns, String sw) {
         String baseQuery = "SELECT SEQ            "
                 + "     , TITLE               "
@@ -649,6 +663,7 @@ public class PostDao {
         return where;
     }
 
+    @Override
     public void reply ( Integer parentSeq, PostVO reply ) {
         PostVO parent = findBySeq(parentSeq);
         

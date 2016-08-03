@@ -19,7 +19,7 @@ import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
 import org.apache.tomcat.util.http.fileupload.util.Streams;
 
 import github.kcs.board.BoardContext;
-import github.kcs.board.dao.PostDao;
+import github.kcs.board.dao.IPostDao;
 import github.kcs.board.vo.CodeVO;
 import github.kcs.board.vo.FileVO;
 import github.kcs.board.vo.PostVO;
@@ -34,7 +34,7 @@ public class ReplyAction implements IAction {
             throws ServletException, IOException {
         
         ServletContext context = req.getServletContext();
-        PostDao postDao = (PostDao) context.getAttribute("postDao");
+        IPostDao postDao = (IPostDao) context.getAttribute("postDao");
         
         Integer parentSeq = null;
         String title = null;

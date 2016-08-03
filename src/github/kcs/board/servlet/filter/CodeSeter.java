@@ -14,7 +14,7 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 
 import github.kcs.board.BoardContext;
-import github.kcs.board.dao.PostDao;
+import github.kcs.board.dao.IPostDao;
 import github.kcs.board.vo.CodeVO;
 
 /**
@@ -44,7 +44,7 @@ public class CodeSeter implements Filter {
 	    
 	    ServletContext context = req.getServletContext();
 	    BoardContext btx = (BoardContext) context.getAttribute("BOARD_CTX");
-	    PostDao dao = btx.getPostDao();
+	    IPostDao dao = btx.getPostDao();
 	    List<CodeVO> codeList = dao.findAllCategory() ; // ????????? ;
 	    req.setAttribute("codes", codeList);
 	    

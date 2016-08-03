@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import github.kcs.board.BoardContext;
-import github.kcs.board.dao.PostDao;
+import github.kcs.board.dao.IPostDao;
 import github.kcs.board.util.WebUtil;
 import github.kcs.board.vo.UserVO;
 
@@ -20,7 +20,7 @@ public class EditAction implements IAction {
             throws ServletException, IOException {
 
         ServletContext context = req.getServletContext();
-        PostDao postDao = (PostDao) context.getAttribute("postDao");
+        IPostDao postDao = (IPostDao) context.getAttribute("postDao");
 
         String title = req.getParameter("title");
         String content = req.getParameter("content");

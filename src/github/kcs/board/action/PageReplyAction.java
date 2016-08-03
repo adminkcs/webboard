@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import github.kcs.board.BoardContext;
-import github.kcs.board.dao.PostDao;
+import github.kcs.board.dao.IPostDao;
 import github.kcs.board.vo.PostVO;
 
 public class PageReplyAction implements IAction {
@@ -19,7 +19,7 @@ public class PageReplyAction implements IAction {
     public String proccess(BoardContext btx, HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
         ServletContext context = req.getServletContext();
-        PostDao postDao = (PostDao) context.getAttribute("postDao");
+        IPostDao postDao = (IPostDao) context.getAttribute("postDao");
         
         
         PostVO post = postDao.findBySeq ( Int(req, "pnum", 1) );

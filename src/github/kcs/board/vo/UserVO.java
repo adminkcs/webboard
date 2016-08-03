@@ -6,6 +6,8 @@ public class UserVO {
 	private String password;
 	private String joinDate;
 	
+	public UserVO() {
+	}
 	public UserVO(Integer seq, String id, String password, String joinDate) {
 		this.seq = seq;
 		this.id = id;

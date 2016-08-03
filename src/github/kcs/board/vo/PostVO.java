@@ -43,6 +43,12 @@ public class PostVO {
 	private Integer indentation;
 	
 	private FileVO attachedFile;
+	
+	public PostVO() {
+	}
+	public PostVO( Integer seq) {
+	    this.seq = seq;
+	}
 	/**
 	 * FIXME 나중에 없애야 함. 
 	 * @param seq

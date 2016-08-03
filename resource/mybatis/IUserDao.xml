@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="github.kcs.board.dao.IUserDao">
+    <!--
+       Object value = map.get( "uid"); 
+     -->
+    <select id="login" parameterType="map" resultType="github.kcs.board.vo.UserVO">
+        select seq, id, password, joindate from users where id = #{uid} and password = #{pw};
+    </select>
+    
+    <!-- 
+    <select id="login2" parameterType="github.kcs.board.vo.UserVO" resultType="github.kcs.board.vo.UserVO">
+        select seq, id, password, joindate from users where id = #{id} and password = #{password};
+    </select>
+     -->
+    <insert id="insertUser" parameterType="map" flushCache="true" >
+        insert into users ( id, password ) values (#{uid} ,#{pw});
+    </insert>   
+    <select id="findBySeq" parameterType="integer" resultType="github.kcs.board.vo.UserVO">
+        SELECT SEQ , ID , PASSWORD , JOINDATE    
+         FROM USERS       
+        WHERE SEQ = #{id}  ;
+    </select>
+</mapper>
