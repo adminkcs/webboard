@@ -1,5 +1,7 @@
 package github.kcs.board.servlet;
 
+import java.io.IOException;
+import java.io.Reader;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -12,8 +14,14 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 import javax.sql.DataSource;
 
+import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+
 import github.kcs.board.BoardContext;
 import github.kcs.board.dao.FileDao;
+import github.kcs.board.dao.IPostDao;
+import github.kcs.board.dao.IUserDao;
 import github.kcs.board.dao.PostDao;
 import github.kcs.board.dao.UserDao;
 
@@ -50,10 +58,28 @@ public class BoardInitListener implements ServletContextListener {
         /* dao 초기화 로직 */
         
         DataSource ds = initDataSource();
+        initMybatisConfig ( btx, ds );
         initDao ( sc, btx, ds );
         
         /* pagenation: 한페이지에 10개씩 */
         btx.setDefaultPageSize(10);
+    }
+
+    private void initMybatisConfig(BoardContext btx, DataSource ds) {
+//        SqlSessionFactoryBuilder builder = null;
+        String mybatisXml = "mybatis-config.xml";
+        Reader reader;
+        try {
+            reader = Resources.getResourceAsReader(mybatisXml);
+            SqlSessionFactoryBuilder builder = new SqlSessionFactoryBuilder();
+            SqlSessionFactory factory = builder.build(reader);
+            
+            btx.setMybatisFactory ( factory );
+            
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        
     }
 
     private DataSource initDataSource() {
@@ -77,18 +103,19 @@ public class BoardInitListener implements ServletContextListener {
     }
 
     private void initDao(ServletContext sc, BoardContext btx, DataSource ds) {
+        SqlSessionFactory fac = btx.getMybatisFactory();
         
         FileDao fileDao = new FileDao(ds);
         btx.setFileDao (fileDao);
         /* 사용자 dao 호출 */
         
-        UserDao userDao = new UserDao(ds);
+        IUserDao userDao = new UserDao(ds, fac);
         btx.setUserDao ( userDao );
         
         sc.setAttribute("userDao",  userDao);
         
         /* 게시판 dao 호출 */
-        PostDao postDao = new PostDao(ds, userDao, fileDao);
+        IPostDao postDao = new PostDao(ds, userDao, fileDao);
         btx.setPostDao( postDao );
         
         sc.setAttribute("postDao", postDao);

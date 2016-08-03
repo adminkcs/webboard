@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import github.kcs.board.BoardContext;
-import github.kcs.board.dao.PostDao;
+import github.kcs.board.dao.IPostDao;
 import github.kcs.board.vo.CodeVO;
 import github.kcs.board.vo.PostVO;
 
@@ -18,7 +18,7 @@ public class PageEditAction implements IAction {
     @Override
     public String proccess(BoardContext btx, HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         ServletContext context = req.getServletContext();
-        PostDao postDao = (PostDao) context.getAttribute("postDao");
+        IPostDao postDao = (IPostDao) context.getAttribute("postDao");
         String pnum = req.getParameter("pnum");
         System.out.println("edit_pnum: " + pnum);
         PostVO post = null;

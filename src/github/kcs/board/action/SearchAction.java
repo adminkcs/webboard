@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import github.kcs.board.BoardContext;
-import github.kcs.board.dao.PostDao;
+import github.kcs.board.dao.IPostDao;
 import github.kcs.board.util.WebUtil;
 import github.kcs.board.vo.PostVO;
 
@@ -19,7 +19,7 @@ public class SearchAction implements IAction {
     @Override
     public String proccess(BoardContext btx, HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        PostDao dao = (PostDao) req.getServletContext().getAttribute("postDao");
+        IPostDao dao = (IPostDao) req.getServletContext().getAttribute("postDao");
         String sw   = req.getParameter("sw"); // 감자 고구마  => 감자, 고구마]
         int tnum  = WebUtil.Int(req, "type", 1);
         

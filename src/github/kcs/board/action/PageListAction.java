@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import github.kcs.board.BoardContext;
-import github.kcs.board.dao.PostDao;
+import github.kcs.board.dao.IPostDao;
 import github.kcs.board.util.WebUtil;
 
 public class PageListAction implements IAction {
@@ -23,7 +23,7 @@ public class PageListAction implements IAction {
      */
     @Override
     public String proccess ( BoardContext btx, HttpServletRequest req, HttpServletResponse res ) throws ServletException, IOException {
-        PostDao dao = (PostDao) req.getServletContext().getAttribute("postDao");
+        IPostDao dao = (IPostDao) req.getServletContext().getAttribute("postDao");
         String cname = req.getParameter("c"); // 숫자
         
         if ( cname == null ) {
@@ -67,7 +67,7 @@ public class PageListAction implements IAction {
     }
     
 
-    private int countPage(PostDao dao, String paramCode) {
+    private int countPage(IPostDao dao, String paramCode) {
         int codeNum = -1 ;
         
         try {

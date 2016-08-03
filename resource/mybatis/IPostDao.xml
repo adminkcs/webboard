@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="github.kcs.board.dao.IPostDao">  
+    <!--
+            Integer seq, 
+            String title, Integer viewCount, String creationTime, String content, UserVO writer,
+            CodeVO category, FileVO attachedFile, 
+            Integer groupNum, Integer parentNum, Integer orderNum, Integer indentation 
+     -->
+    <resultMap type="github.kcs.board.vo.PostVO" id="postmap">
+        <constructor>
+            <idArg column="seq"  javaType="integer"/>
+        </constructor>
+        <result property="title" column="title"/>
+        <result property="viewCount" column="viewcount"/>
+        <result property="creationTime" column="creationtime"/>
+        <result property="content" column="content"/>
+        <association property="writer" javaType="github.kcs.board.vo.UserVO">
+            <constructor>
+                <idArg column="seq" javaType="integer"/>
+                <arg column="id" javaType="string"/>
+                <arg column="password" javaType="string"/>
+                <arg column="joindate" javaType="string"/>
+            </constructor>
+        </association>
+        <association property="category" javaType="github.kcs.board.vo.CodeVO">
+            <constructor>
+                <idArg column="cd_dvs_id" javaType="integer"/>
+                <arg column="cd_nm" javaType="string"/>
+            </constructor>
+        </association>
+    </resultMap>
+   
+    <select id="findAll"  resultMap="postmap">
+        select p.*, u.*, c.* from posts p
+        inner join users u  on p.writer = u.seq 
+        join codes c on p.category = c.cd_dvs_id;
+    </select>
+    
+    <select id="findByRange" parameterType="map" resultMap="postmap" >
+    select p.*, u.*, c.* 
+    from ( select seq from posts order by gnum desc, odrnum asc limit 0, 10) p2
+    inner join posts p on p2.seq = p.seq
+    inner join users u  on p.writer = u.seq 
+    join codes c on p.category = c.cd_dvs_id
+    </select>
+</mapper>

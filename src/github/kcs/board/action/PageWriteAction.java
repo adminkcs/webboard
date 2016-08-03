@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import github.kcs.board.BoardContext;
-import github.kcs.board.dao.PostDao;
+import github.kcs.board.dao.IPostDao;
 import github.kcs.board.vo.CodeVO;
 
 public class PageWriteAction implements IAction {
@@ -18,7 +18,7 @@ public class PageWriteAction implements IAction {
     public String proccess(BoardContext btx, HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
         ServletContext context = req.getServletContext();
-        PostDao postDao = (PostDao) context.getAttribute("postDao");
+        IPostDao postDao = (IPostDao) context.getAttribute("postDao");
         List<CodeVO> code = null;
         try {            
             code = postDao.findAllCategory(); 

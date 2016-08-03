@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import github.kcs.board.BoardContext;
-import github.kcs.board.dao.UserDao;
+import github.kcs.board.dao.IUserDao;
 
 public class JoinAction implements IAction {
 
@@ -16,7 +16,7 @@ public class JoinAction implements IAction {
     public String proccess(BoardContext btx, HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         ServletContext ctx  = req.getServletContext();
         
-        UserDao userDao = (UserDao) ctx.getAttribute("userDao");
+        IUserDao userDao = (IUserDao) ctx.getAttribute("userDao");
         /*
          * 1. 아이디 중복 여부
          * 

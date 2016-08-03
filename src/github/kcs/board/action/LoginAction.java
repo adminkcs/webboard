@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import github.kcs.board.BoardContext;
-import github.kcs.board.dao.UserDao;
+import github.kcs.board.dao.IUserDao;
 import github.kcs.board.vo.UserVO;
 
 public class LoginAction implements IAction {
@@ -18,7 +18,7 @@ public class LoginAction implements IAction {
     public String proccess(BoardContext btx, HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
         ServletContext context = req.getServletContext();
-        UserDao userDao = (UserDao) context.getAttribute("userDao");
+        IUserDao userDao = (IUserDao) context.getAttribute("userDao");
         String id = req.getParameter("id");
         String password = req.getParameter("password");
         UserVO loginUser = userDao.login ( id, password );

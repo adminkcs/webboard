@@ -1,18 +1,18 @@
 package github.kcs.board.vo;
 
 public class CodeVO {
-	private int cdDvsId;
+	private Integer cdDvsId;
 	private String cdNm;
 	
-	public CodeVO(int cdDvsId, String cdNm) {
+	public CodeVO(Integer cdDvsId, String cdNm) {
 	    this.cdDvsId = cdDvsId;
 	    this.cdNm = cdNm;
 	}
 	
-	public int getCdDvsId() {
+	public Integer getCdDvsId() {
 		return cdDvsId;
 	}
-	public void setCdDvsId(int cdDvsId) {
+	public void setCdDvsId(Integer cdDvsId) {
 		this.cdDvsId = cdDvsId;
 	}
 	public String getCdNm() {
