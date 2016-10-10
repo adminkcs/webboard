@@ -43,7 +43,10 @@ import github.kcs.board.action.WriteAction;
                               , "/search"        //회원가입 (회원가입화면으로 이동)
                               , "/doJoin"      //회원가입 (회원가입 가입 후 웰컴화면으로 이동)
                               , "/reply"      
-                              , "/doReply"      
+                              , "/doReply"    
+                              , "/jquery"     //jquery 연습 페이지
+                              ,"/jquery03_02"  //jquery 연습페이지
+                              ,"/jquery_sample"  //jquery 연습페이지
                               , "/f/*"    
                           } )
 public class FrontController extends HttpServlet {
@@ -120,6 +123,24 @@ public class FrontController extends HttpServlet {
             // /f/322232
             String nextUrl = new FileDownloadAction().proccess(btx, request, response);
             moveNext(request, response, nextUrl);
+            
+        } else if ( uri.equals("/jquery")) {
+            /*
+             * jQuery연습 페이지로 이동한다
+             */
+            request.getRequestDispatcher("WEB-INF/views/jquery.jsp").forward(request, response);                
+          
+        } else if ( uri.equals("/jquery03_02")) {
+            /*
+             * jQuery연습 페이지로 이동한다
+             */
+            request.getRequestDispatcher("WEB-INF/views/jquery03_02.jsp").forward(request, response);                
+            
+        } else if ( uri.equals("/jquery_sample")) {
+            /*
+             * jQuery연습 페이지로 이동한다
+             */
+            request.getRequestDispatcher("WEB-INF/views/jquery_sample.jsp").forward(request, response);                
             
         }
         else {

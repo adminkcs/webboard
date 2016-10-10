@@ -64,6 +64,7 @@ public class WriteAction implements IAction {
         String title = null, content = null;
         int categoryFK = -1;
         FileVO file = null;
+        long fsize = 0;
         ServletFileUpload upload = new ServletFileUpload();
         if ( ! ServletFileUpload.isMultipartContent(req) ) {
             return "redirect:" + req.getContextPath();
@@ -102,10 +103,10 @@ public class WriteAction implements IAction {
                      * rfn --> ufn(unique file name) 을 바꿔주는 기능이 반드시 들어가야함.
                      */
                     FileOutputStream fos = new FileOutputStream(new File(ROOT_DIR, ufn));
-                    long fsize = Streams.copy( in , fos, true); // file size as bytes
+                    fsize = Streams.copy( in , fos, true); // file size as bytes
+                   
                     file = new FileVO(realFileName, ufn, fsize);
                     // fos.close();
-                    
                     System.out.println("file field : " + fname);
                 }
             }

@@ -7,6 +7,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<script type="text/javascript" src="<%=request.getContextPath() %>/js/jquery-3.1.0.min.js"></script>
 <title>게시판 - ${category }</title>
 
 <style type="text/css">
@@ -39,6 +40,25 @@ function go ( pnum ) {
     var frm = document.getElementById('frm') ;
     frm.submit();
 }
+
+$(document).ready(function(){
+	// mouseover, mouseout
+	$('#posts tr.each-post').on('mouseover', function(e){
+		  var td = e.target; // mouseover 이벤트를 발생시킨 dom element
+		  //var tr = $( td ).parent(); // td의 부모를 찾아줌. jquery 기능
+		  var tr = $( td ).closest('.each-post'); // td의 부모를 찾아줌. jquery 기능
+		  tr.css('background-color', 'yellow');
+	});
+	
+	$('#posts tr.each-post').on('mouseout', function(e){
+		  var td = e.target; // mouseover 이벤트를 발생시킨 dom element
+		  //var tr = $( td ).parent(); // td의 부모를 찾아줌. jquery 기능
+		  var tr = $( td ).closest('.each-post'); // td의 부모를 찾아줌. jquery 기능
+		  tr.css('background-color', 'white');
+	});
+	
+	
+});
 </script>
 </head>
 <body>
@@ -50,7 +70,7 @@ function go ( pnum ) {
 </form>
 <h3>${prePage }게시판 리스트 출력[2]</h3>
 <b> ${curPage} of ${totalPage } page</b>
-<table border="1">
+<table border="1" id="posts" >
     <tr>
         <td>글번호</td>
         <td>제목</td>
@@ -60,7 +80,7 @@ function go ( pnum ) {
         <td>카테고리</td>
     </tr>
 <c:forEach var="k" items="${allPosts }">
-    <tr>
+    <tr class="each-post">
         <td>${k.seq}</td>
         <!-- http://localhost:8080/board/read?pid=1005 -->
         <td><span class="padding${ k.indentation }"></span><a href="#" onclick="go(${k.seq}); return false;">${k.title }</a></td>
